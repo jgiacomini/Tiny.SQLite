@@ -11,6 +11,10 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnCustomNameTest : BaseColumnTest
     {
+        public ColumnCustomNameTest() : base(false)
+        {
+        }
+
         public class CustomTable
         {
             [Column("CUSTOM")]

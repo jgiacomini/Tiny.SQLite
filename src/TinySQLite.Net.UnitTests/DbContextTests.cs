@@ -4,29 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TinySQLite.Net.UnitTests
 {
     [TestClass]
-    public class DbContextTests
+    public class DbContextTests : BaseDatabaseTests
     {
-        private string _pathOfDb;
-
-        [TestInitialize]
-        public void TestInitialize()
+        public DbContextTests() : base(false)
         {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                _pathOfDb = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-            }
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                if(!File.Exists(_pathOfDb))
-                {
-                    File.Delete(_pathOfDb);
-                }
-            }
         }
 
         [TestMethod]
@@ -40,10 +21,21 @@ namespace TinySQLite.Net.UnitTests
         public void CreateDatabase()
         {
             DbContext dbContext = new DbContext(_pathOfDb, 0, false);
-
+            
             dbContext.Database.CreateFile();
 
             Assert.IsTrue(File.Exists(_pathOfDb));
         }
+
+        [TestMethod]
+        public void CreateInMemoryDatabase()
+        {
+            DbContext dbContext = DbContext.InMemory();
+            dbContext.Database.CreateFile();
+
+            Assert.IsTrue(File.Exists(_pathOfDb));
+        }
+
+       
     }
 }

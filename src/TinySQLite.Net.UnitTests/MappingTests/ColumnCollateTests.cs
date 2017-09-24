@@ -9,31 +9,8 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnCollateTests : BaseColumnTest
     {
-        
-        private string _pathOfDb;
-
-        [TestInitialize]
-        public void TestInitialize()
+        public ColumnCollateTests() : base(true)
         {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                _pathOfDb = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-            }
-
-            var context = new DbContext(_pathOfDb);
-            context.Database.CreateFile();
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                if (!File.Exists(_pathOfDb))
-                {
-                    File.Delete(_pathOfDb);
-                }
-            }
         }
 
         public class CollateColumnTable

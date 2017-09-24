@@ -2,21 +2,19 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mono.Data.Sqlite;
 using TinySQLite.Attributes;
 
 namespace TinySQLite
 {
-
     public class TableQuery<T>
     {
         private readonly TableMapping _mapping;
-        private readonly SqliteConnection _connection;
+        private readonly QueriesManager _queriesManager;
 
-        internal TableQuery(TableMapping mapping, SqliteConnection connection)
+        internal TableQuery(TableMapping mapping, QueriesManager queriesManager)
         {
             _mapping = mapping;
-            _connection = connection;
+            _queriesManager = queriesManager;
         }
 
         public Task CreateTableAsync()
@@ -67,8 +65,7 @@ namespace TinySQLite
                 }
             }
 
-            //Collating (Binary, NOCASE, RTRIM)
-            return ExecuteNonQueryAsync(queryBuilder.ToString());
+            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString());
         }
 
         private string GetCollate(Collate collate)
@@ -88,35 +85,14 @@ namespace TinySQLite
         
         public async Task<bool> ExistsAsync()
         {
-            var result = await ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'");
+            var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'");
             return Convert.ToBoolean(result);
         }
         public Task DropTableAsync()
         {
             var query = $"DROP TABLE IF EXISTS \"{_mapping.TableName.EscapeTableName()}\";";
-            return ExecuteNonQueryAsync(query);
+            return _queriesManager.ExecuteNonQueryAsync(query);
         }
 
-        private async Task ExecuteNonQueryAsync(string sql)
-        {
-            await _connection.OpenAsync();
-
-            var command = _connection.CreateCommand();
-
-            command.CommandText = sql;
-            await command.ExecuteNonQueryAsync();
-
-            _connection.Close();
-        }
-
-        private async Task<object> ExecuteScalarAsync(string sql)
-        {
-            await _connection.OpenAsync();
-
-            var command = _connection.CreateCommand();
-
-            command.CommandText = sql;
-            return await command.ExecuteScalarAsync();
-        }
     }
 }

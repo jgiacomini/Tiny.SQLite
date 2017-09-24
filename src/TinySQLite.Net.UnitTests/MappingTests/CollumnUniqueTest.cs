@@ -9,35 +9,16 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnUniqueTest : BaseColumnTest
     {
+        public ColumnUniqueTest() : base(true)
+        {
+
+        }
         class UniqueColumnsTable
         {
             [Unique()]
             public string Unique { get; set; }
 
             public string NotUnique { get; set; }
-        }
-
-        private string _pathOfDb;
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                _pathOfDb = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-            }
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                if (!File.Exists(_pathOfDb))
-                {
-                    File.Delete(_pathOfDb);
-                }
-            }
         }
 
         [TestMethod]

@@ -10,10 +10,6 @@ namespace TinySQLite.Attributes
         public int Order { get; set; }
         public bool Unique { get; set; }
 
-        public IndexedAttribute()
-        {
-        }
-
         public IndexedAttribute(string name, int order)
         {
             Name = name;

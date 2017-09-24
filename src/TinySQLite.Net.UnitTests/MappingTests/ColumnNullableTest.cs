@@ -6,6 +6,10 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnNullableTest : BaseColumnTest
     {
+        public ColumnNullableTest() : base(false)
+        {
+        }
+
         class NullableColumnsTable
         {
             public string NullableString { get; set; }

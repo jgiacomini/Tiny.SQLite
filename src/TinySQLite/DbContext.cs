@@ -7,11 +7,12 @@ namespace TinySQLite
 
     public class DbContext : IDisposable
     {
+
+#region Fields
         private readonly Dictionary<Type, TableMapping> _mappings = new Dictionary<Type, TableMapping>();
-
-        private readonly SqliteConnection _connection;
-
+        private readonly QueriesManager _queriesManager;
         private readonly bool _storeDateTimeAsTicks;
+#endregion
 
         /// <summary>
         /// Create a Database context
@@ -24,9 +25,10 @@ namespace TinySQLite
 
         public DbContext(string filePath, int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
         {
-            _connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
+            var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
-            Database = new Database(_connection, filePath);
+            _queriesManager = new QueriesManager(connection);
+            Database = new Database(_queriesManager, filePath);
             if (autoCreateDatabaseFile)
             {
                 Database.CreateFile();
@@ -35,16 +37,17 @@ namespace TinySQLite
 
         private DbContext(int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
         {
-            _connection = new SqliteConnection("URI=file::memory:,version=3");
+            var connection = new SqliteConnection("URI=file::memory:,version=3");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
-            Database = new Database(_connection, null);
+            _queriesManager = new QueriesManager(connection);
+            Database = new Database(_queriesManager, null);
             if (autoCreateDatabaseFile)
             {
                 Database.CreateFile();
             }
         }
 
-        public static DbContext InMemory(int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
+        public static DbContext InMemory(int busyTimeout = 0, bool storeDateTimeAsTicks = false)
         {
             return new DbContext(busyTimeout, storeDateTimeAsTicks);
         }
@@ -66,7 +69,7 @@ namespace TinySQLite
                 _mappings.Add(type, mapping);
             }
 
-            return new TableQuery<T>(mapping, _connection);
+            return new TableQuery<T>(mapping, _queriesManager);
         }
 
         #region IDisposable Support
@@ -78,7 +81,7 @@ namespace TinySQLite
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    _queriesManager.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -97,8 +100,7 @@ namespace TinySQLite
         public void Dispose()
         {
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

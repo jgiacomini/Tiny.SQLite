@@ -6,6 +6,10 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnMaxLenghtTest : BaseColumnTest
     {
+        public ColumnMaxLenghtTest() : base(false)
+        {
+        }
+
         public class MaxLenghtTable
         {
             [MaxLength(255)]
