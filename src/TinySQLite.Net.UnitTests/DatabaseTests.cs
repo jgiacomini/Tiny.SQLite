@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TinySQLite.Net.UnitTests
@@ -9,8 +11,7 @@ namespace TinySQLite.Net.UnitTests
         public DatabaseTests() : base(true)
         {
         }
-
-
+        
         [TestMethod]
         public async Task TestVacuumAsync()
         {
@@ -35,6 +36,8 @@ namespace TinySQLite.Net.UnitTests
         {
             const long currentUserVersion = 7L;
             DbContext dbContext = new DbContext(_pathOfDb, 0, false);
+
+            dbContext.Database.Log = WriteLine;
             await dbContext.Database.SetUserVersionAsync(currentUserVersion);
 
             var version = await dbContext.Database.GetUserVersionAsync();
@@ -44,6 +47,10 @@ namespace TinySQLite.Net.UnitTests
             Assert.IsTrue(version == currentUserVersion);
         }
 
+        void WriteLine(string line)
+        {
+            Debug.WriteLine(line);
+        }
 
         [TestMethod]
         public async Task TestWALAsync()

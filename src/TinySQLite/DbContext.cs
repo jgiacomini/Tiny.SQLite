@@ -25,8 +25,9 @@ namespace TinySQLite
 
         public DbContext(string filePath, int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
         {
-            var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
+            var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
+
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, filePath);
             if (autoCreateDatabaseFile)
@@ -81,6 +82,7 @@ namespace TinySQLite
             {
                 if (disposing)
                 {
+                    Database.Dispose();
                     _queriesManager.Dispose();
                 }
 

@@ -9,11 +9,22 @@ namespace TinySQLite
     {
         #region Fields
         private SqliteConnection _connection;
+        private InternalLogger _internalLogger;
+        private bool _disposedValue = false; // To detect redundant calls
         #endregion
 
         public QueriesManager(SqliteConnection connection)
         {
             _connection = connection;
+            _internalLogger = new InternalLogger();
+        }
+
+        public InternalLogger InternalLogger
+        {
+            get
+            {
+                return _internalLogger;
+            }
         }
 
         public async Task OpenConnectionAsync()
@@ -26,25 +37,30 @@ namespace TinySQLite
 
         public async Task ExecuteNonQueryAsync(string sql)
         {
-            await OpenConnectionAsync();
-            var command = _connection.CreateCommand();
+            using (var monitor = new QueryMonitor(sql, _internalLogger))
+            {
+                await OpenConnectionAsync();
+                var command = _connection.CreateCommand();
 
-            command.CommandText = sql;
-            await command.ExecuteNonQueryAsync();
+                command.CommandText = sql;
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<object> ExecuteScalarAsync(string sql)
         {
-            await OpenConnectionAsync();
-            var command = _connection.CreateCommand();
+            using (var monitor = new QueryMonitor(sql, _internalLogger))
+            {
+                await OpenConnectionAsync();
+                var command = _connection.CreateCommand();
 
-            command.CommandText = sql;
-            return await command.ExecuteScalarAsync();
+                command.CommandText = sql;
+                return await command.ExecuteScalarAsync();
+            }
         }
 
         #region IDisposable Support
-        private bool _disposedValue = false; // To detect redundant calls
-
+     
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -57,7 +73,8 @@ namespace TinySQLite
                     }
                     _connection.Dispose();
                     _connection = null;
-
+                    _internalLogger?.Dispose();
+                    _internalLogger = null;
                 }
 
                 _disposedValue = true;

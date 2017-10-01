@@ -6,15 +6,26 @@ using Mono.Data.Sqlite;
 namespace TinySQLite
 {
 
-    public class Database
+    public class Database : IDisposable
     {
+        #region Fields
         private readonly QueriesManager _queriesManager;
         private readonly string _filePath;
+        #endregion
 
+        #region Delegates
+        public Action<string> Log { get; set; }
+        #endregion
         internal Database(QueriesManager queriesManager, string filePath)
         {
             _queriesManager = queriesManager;
+            _queriesManager.InternalLogger.OnLog = OnLog;
             _filePath = filePath;
+        }
+
+        void OnLog(string onLog)
+        {
+            Log?.Invoke(onLog);
         }
 
         public void CreateFile()
@@ -24,7 +35,7 @@ namespace TinySQLite
                 SqliteConnection.CreateFile(_filePath);
             }
         }
-
+        
         /// <summary>
         /// Get the SQLite version
         /// </summary>
@@ -88,6 +99,11 @@ namespace TinySQLite
         public async Task DisableWALAsync()
         {
             await _queriesManager.ExecuteScalarAsync("PRAGMA journal_mode = DELETE;");
+        }
+
+        public void Dispose()
+        {
+            Log = null;
         }
     }
 }
