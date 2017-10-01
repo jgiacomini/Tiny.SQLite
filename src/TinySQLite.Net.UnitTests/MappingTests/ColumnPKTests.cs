@@ -1,14 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TinySQLite.Attributes;
-using TinySQLite.Exceptions;
 
 namespace TinySQLite.Net.UnitTests
 {
     [TestClass]
-    public class ColumnPrimaryTests : BaseColumnTest
+    public class ColumnPKTests : BaseColumnTest
     {
-        public ColumnPrimaryTests() : base(true)
+        public ColumnPKTests() : base(true)
         {
         }
 
@@ -35,7 +34,7 @@ namespace TinySQLite.Net.UnitTests
 
 
         [TestMethod]
-        public void TestAutoColumn()
+        public void PK_OneColumn()
         {
             TableMapper mapper = new TableMapper(true);
             var mapping = mapper.Map<PrimaryTable>();
@@ -46,7 +45,7 @@ namespace TinySQLite.Net.UnitTests
         }
 
         [TestMethod]
-        public async Task Test2ColumnsPrimayKey()
+        public async Task PK_2ColumnsPrimayKey()
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
             var table = context.Table<DoublePrimaryKey>();
@@ -54,7 +53,7 @@ namespace TinySQLite.Net.UnitTests
         }
 
         [TestMethod]
-        public async Task CreateTable()
+        public async Task PK_CreateTable()
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
             var table = context.Table<PrimaryTable>();
