@@ -25,6 +25,11 @@ namespace TinySQLite
 
         public DbContext(string filePath, int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
         {
+            if (filePath == null)
+            {
+                throw new ArgumentNullException($"{nameof(filePath)}");
+            }
+
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
 

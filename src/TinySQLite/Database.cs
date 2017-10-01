@@ -28,9 +28,12 @@ namespace TinySQLite
             Log?.Invoke(onLog);
         }
 
+        /// <summary>
+        /// Create database
+        /// </summary>
         public void CreateFile()
         {
-            if (File.Exists(_filePath))
+            if (_filePath != null && !File.Exists(_filePath))
             {
                 SqliteConnection.CreateFile(_filePath);
             }
@@ -40,7 +43,7 @@ namespace TinySQLite
         /// Get the SQLite version
         /// </summary>
         /// <returns>return the version of SQLite database</returns>
-        public async Task<string> GetVersionAsync()
+        public async Task<string> GetSQLiteVersionAsync()
         {
             var version = await _queriesManager.ExecuteScalarAsync("SELECT sqlite_version();");
 
@@ -48,7 +51,8 @@ namespace TinySQLite
         }
 
         /// <summary>
-        /// Get the user version of database
+        /// Get the user version of database.
+        /// The user_version pragma will to get or set the value of the user-version integer at offset 60 in the database header. The user-version is an integer that is available to applications to use however they want. SQLite makes no use of the user-version itself. 
         /// </summary>
         /// <returns>return the user version of SQLite database</returns>
         public async Task<long> GetUserVersionAsync()
@@ -60,6 +64,7 @@ namespace TinySQLite
 
         /// <summary>
         /// Set the user version of database
+        /// The user_version pragma will to get or set the value of the user-version integer at offset 60 in the database header. The user-version is an integer that is available to applications to use however they want. SQLite makes no use of the user-version itself. 
         /// </summary>
         /// <param name="userVersion">user version of database</param>
         /// <returns>return a Task</returns>

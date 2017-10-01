@@ -24,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
         {
             DbContext dbContext = new DbContext(_pathOfDb, 0, false);
 
-            var version = await dbContext.Database.GetVersionAsync();
+            var version = await dbContext.Database.GetSQLiteVersionAsync();
 
             System.Diagnostics.Debug.WriteLine(version);
 
