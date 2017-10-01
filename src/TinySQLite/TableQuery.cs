@@ -22,18 +22,22 @@ namespace TinySQLite
             var queryBuilder = new StringBuilder($"CREATE TABLE IF NOT EXISTS {_mapping.TableName.EscapeTableName()}(\n");
 
             var lastColumn = _mapping.Columns.Last();
+            bool primaryKeysAlreadyCreated = false;
+            bool hasPrimaryKey = false;
             foreach (var column in _mapping.Columns)
             {
                 queryBuilder.Append($"{column.ColumnName.EscapeColumnName()} {column.ColumnType} ");
 
-                if (column.IsPK)
+                if (column.IsPrimaryKey)
                 {
-                    queryBuilder.Append("PRIMARY KEY ");
+                    hasPrimaryKey = true;
+                    if (column.IsAutoIncrement)
+                    {
+                        queryBuilder.Append("PRIMARY KEY AUTOINCREMENT ");
+                        primaryKeysAlreadyCreated = true;
+                    }
                 }
-                if (column.IsAutoInc)
-                {
-                    queryBuilder.Append("AUTOINCREMENT ");
-                }
+                
                 if (!column.IsNullable)
                 {
                     queryBuilder.Append("NOT NULL ");
@@ -45,6 +49,16 @@ namespace TinySQLite
 
                 if (column == lastColumn)
                 {
+                    // Add primary keys 
+                    // PRIMARY KEY(column_1, column_2,...)
+
+                    if (!primaryKeysAlreadyCreated && hasPrimaryKey)
+                    {
+                        var columnsNames = string.Join(",", _mapping.Columns.Where(c => c.IsPrimaryKey).Select(p => p.ColumnName.EscapeColumnName()));
+                        queryBuilder.AppendLine();
+                        queryBuilder.AppendLine($", PRIMARY KEY({columnsNames}) ");
+                    }
+
                     queryBuilder.Append(");");
                 }
                 else

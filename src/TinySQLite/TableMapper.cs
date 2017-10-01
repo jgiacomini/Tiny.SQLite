@@ -28,6 +28,12 @@ namespace TinySQLite
             mapping.TableName = GetTableName(type);
             mapping.MappedType = type;
             mapping.Columns = GetColums(type);
+
+            if (mapping.Columns.Count(c => c.IsAutoIncrement) > 1)
+            {
+                throw new TableHaveMoreThanOneAutoIncrementedColumnException(mapping.TableName);
+            }
+
             return mapping;
         }
 
@@ -66,11 +72,14 @@ namespace TinySQLite
         {
             var colum = new TableColumn();
             colum.PropertyName = info.Name;
-            var attibutes = info.GetCustomAttributes();
-            colum.ColumnName = GeColumnName(info, attibutes);
-            colum.IsNullable = GetColumnIsNullable(info, attibutes);
-            colum.IsUnique = GeColumnIsUnique(info, attibutes);
-            colum.Collate = GetColumnCollating(info, attibutes);
+            var attributes = info.GetCustomAttributes();
+            colum.IsPrimaryKey = GeColumnIsPrimaryKey(info, attributes);
+            colum.IsAutoIncrement = GeColumnIsAutoInc(info, attributes);
+
+            colum.ColumnName = GeColumnName(info, attributes);
+            colum.IsNullable = GetColumnIsNullable(info, attributes);
+            colum.IsUnique = GeColumnIsUnique(info, attributes);
+            colum.Collate = GetColumnCollating(info, attributes);
             return colum;
         }
 
@@ -116,6 +125,45 @@ namespace TinySQLite
 
             return info.Name;
         }
+
+        private bool GeColumnIsPrimaryKey(PropertyInfo info, IEnumerable<Attribute> attributes)
+        {
+            var attribute = attributes.FirstOrDefault(a => a is PrimaryKeyAttribute) as PrimaryKeyAttribute;
+
+            if (attribute != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool GeColumnIsAutoInc(PropertyInfo info, IEnumerable<Attribute> attributes)
+        {
+            var attribute = attributes.FirstOrDefault(a => a is PrimaryKeyAttribute) as PrimaryKeyAttribute;
+
+            if (attribute != null && attribute.AutoIncrement)
+            {
+                var type = info.PropertyType;
+
+                if(type == typeof(long) ||
+                    type == typeof(ulong) ||
+                    type == typeof(int) ||
+                    type == typeof(uint) ||
+                    type == typeof(byte)||
+                    type == typeof(sbyte) ||
+                    type == typeof(short) ||
+                    type == typeof(sbyte))
+                {
+                    return true;
+                }
+
+                throw new TypeNotSupportedAutoIncrementException(type);
+            }
+
+            return false;
+        }
+
 
         private bool GeColumnIsUnique(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
