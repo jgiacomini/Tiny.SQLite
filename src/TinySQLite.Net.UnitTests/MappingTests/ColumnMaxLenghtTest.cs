@@ -19,7 +19,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestMaxLenght()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<MaxLenghtTable>();
             var column = GetColumnByPropertyName(mapping, "Max");
 

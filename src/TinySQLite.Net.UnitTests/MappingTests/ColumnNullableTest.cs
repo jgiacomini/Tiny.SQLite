@@ -33,7 +33,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void CollumnNullable_TestString()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<NullableColumnsTable>();
             var column = GetColumnByPropertyName(mapping,
                 nameof(NullableColumnsTable.NullableString));
@@ -49,7 +49,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void CollumnNullable_TestBytes()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<NullableColumnsTable>();
             var column = GetColumnByPropertyName(mapping, nameof(NullableColumnsTable.MyBytes));
 
@@ -64,7 +64,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void CollumnNullable_TestInt()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<NullableColumnsIntTable>();
 
             var columnNotNull = GetColumnByPropertyName(mapping, nameof(NullableColumnsIntTable.Int));

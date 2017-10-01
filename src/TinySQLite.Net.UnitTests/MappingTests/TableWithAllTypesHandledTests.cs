@@ -79,7 +79,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestSimpleTypes()
         {
-            TableMapper mapper = new TableMapper(false);
+            TableMapper mapper = new TableMapper(false, true);
             var mapping = mapper.Map<SimpleTableWithAllTypes>();
 
             CheckColumns(mapping);
@@ -130,7 +130,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestSimpleTypesNullable()
         {
-            TableMapper mapper = new TableMapper(false);
+            TableMapper mapper = new TableMapper(false, true);
             var mapping = mapper.Map<SimpleTableWithAllTypesNullable>();
 
             CheckColumnsNullabe(mapping);

@@ -4,16 +4,20 @@ using System.Reflection;
 using TinySQLite.Attributes;
 using System.Linq;
 using TinySQLite.Exceptions;
+using System.Text;
+using System.Globalization;
 
 namespace TinySQLite
 {
     public class TableMapper
     {
         private readonly bool _storeDateTimeAsTicks;
+        private readonly bool _removeDiacriticsOnTableNameAndColumnName;
 
-        public TableMapper(bool storeDateTimeAsTicks)
+        public TableMapper(bool storeDateTimeAsTicks, bool removeDiacriticsOnTableNameAndColumnName)
         {
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
+            _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
         }
 
         public TableMapping Map<T>() where T : class, new()
@@ -62,10 +66,10 @@ namespace TinySQLite
 
             if (attribute != null)
             {
-                return attribute.Name;
+                return RemoveDiacriticsIfNeeded(attribute.Name);
             }
 
-            return type.Name;
+            return RemoveDiacriticsIfNeeded(type.Name);
         }
 
         private TableColumn GetTableColumn(PropertyInfo info)
@@ -120,10 +124,10 @@ namespace TinySQLite
 
             if (attribute != null)
             {
-                return attribute.Name;
+                return RemoveDiacriticsIfNeeded(attribute.Name);
             }
 
-            return info.Name;
+            return RemoveDiacriticsIfNeeded(info.Name);
         }
 
         private bool GeColumnIsPrimaryKey(PropertyInfo info, IEnumerable<Attribute> attributes)
@@ -332,7 +336,33 @@ namespace TinySQLite
             Type u = Nullable.GetUnderlyingType(t);
             return (u != null) && u.IsEnum;
         }
-#endregion
+        #endregion
 
+        private string RemoveDiacriticsIfNeeded(string text)
+        {
+            if (_removeDiacriticsOnTableNameAndColumnName)
+            {
+                return RemoveDiacritics(text);
+            }
+
+            return text;
+        }
+
+        private string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
     }
 }

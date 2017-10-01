@@ -36,7 +36,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void PK_OneColumn()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<PrimaryTable>();
 
             var column0 = GetColumnByPropertyName(mapping, nameof(PrimaryTable.Primary));

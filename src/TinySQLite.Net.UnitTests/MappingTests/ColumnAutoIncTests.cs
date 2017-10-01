@@ -6,19 +6,19 @@ using TinySQLite.Exceptions;
 namespace TinySQLite.Net.UnitTests
 {
     [TestClass]
-    public class ColumnAutoIncTests : BaseColumnTest
+    public class ColumnAutoIncrementTests : BaseColumnTest
     {
-        public ColumnAutoIncTests() : base(true)
+        public ColumnAutoIncrementTests() : base(true)
         {
         }
 
-        public class AutInc
+        public class AutoIncrement
         {
             [PrimaryKey(AutoIncrement =  true)]
             public int AutoInc { get; set; }
         }
 
-        public class AutIncWith2Column
+        public class AutoIncrementWith2Column
         {
             [PrimaryKey(AutoIncrement = true)]
             public int AutoInc1 { get; set; }
@@ -27,7 +27,7 @@ namespace TinySQLite.Net.UnitTests
             public int AutoInc2 { get; set; }
         }
 
-        public class BadAutInc
+        public class BadAutoIncrement
         {
             [PrimaryKey(AutoIncrement = true)]
             public string AutoInc { get; set; }
@@ -37,10 +37,10 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestAutoColumn()
         {
-            TableMapper mapper = new TableMapper(true);
-            var mapping = mapper.Map<AutInc>();
+            TableMapper mapper = new TableMapper(true, true);
+            var mapping = mapper.Map<AutoIncrement>();
 
-            var column0 = GetColumnByPropertyName(mapping, nameof(AutInc.AutoInc));
+            var column0 = GetColumnByPropertyName(mapping, nameof(AutoIncrement.AutoInc));
 
             Assert.IsTrue(column0.IsAutoIncrement, "Column 'AutoInc' must be auto incremented");
         }
@@ -50,11 +50,11 @@ namespace TinySQLite.Net.UnitTests
         {
             bool exceptionThrown = false;
 
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             try
             {
 
-                var mapping = mapper.Map<AutIncWith2Column>();
+                var mapping = mapper.Map<AutoIncrementWith2Column>();
             }
             catch (TableHaveMoreThanOneAutoIncrementedColumnException)
             {
@@ -70,7 +70,7 @@ namespace TinySQLite.Net.UnitTests
         public async Task CreateTable()
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
-            var table = context.Table<AutInc>();
+            var table = context.Table<AutoIncrement>();
             await table.CreateTableAsync();
         }
 
@@ -82,7 +82,7 @@ namespace TinySQLite.Net.UnitTests
 
             try
             {
-                var table = context.Table<BadAutInc>();
+                var table = context.Table<BadAutoIncrement>();
                 await table.CreateTableAsync();
             }
             catch (TypeNotSupportedAutoIncrementException)

@@ -30,7 +30,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestCollationColumn()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<CollateColumnTable>();
 
             var column0 = GetColumnByPropertyName(mapping, nameof(CollateColumnTable.BINARY));

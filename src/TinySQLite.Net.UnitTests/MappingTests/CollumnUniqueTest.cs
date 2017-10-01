@@ -24,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void CollumnUnique_Test()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<UniqueColumnsTable>();
             var column = GetColumnByPropertyName(mapping,
                 nameof(UniqueColumnsTable.Unique));

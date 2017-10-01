@@ -24,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestCustomColumnName()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<CustomTable>();
             var column = GetColumnByPropertyName(mapping, "Max");
 

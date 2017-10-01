@@ -25,7 +25,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestIgnoredColumn()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<IgnoredColumnTable>();
             var column1 = GetColumnByPropertyName(mapping, "Ignore");
             var column2 = GetColumnByPropertyName(mapping, "Ignore2");
@@ -49,7 +49,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public void TestIgnored_Static_NoGetterSetters_Columns()
         {
-            TableMapper mapper = new TableMapper(true);
+            TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<MustBeIgnoredColumn>();
             var staticColumn = GetColumnByPropertyName(mapping, nameof(MustBeIgnoredColumn.StaticInt));
 

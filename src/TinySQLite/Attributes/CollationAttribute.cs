@@ -2,13 +2,18 @@
 
 namespace TinySQLite.Attributes
 {
-
     /// <summary>
-    /// Every column of every table has an associated collating function. If no collating function is explicitly defined, then the collating function defaults to BINARY. The COLLATE clause of the column definition is used to define alternative collating functions for a column. 
+    /// Every column of every table has an associated collating function. 
+    /// If no collating function is explicitly defined, then the collating function defaults to BINARY. 
+    /// The Collate clause of the column definition is used to define alternative collating functions for a column. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple =false)]
     public class CollationAttribute : Attribute
     {
+        /// <summary>
+        /// When SQLite compares two strings, it uses a collating sequence or collating function (two words for the same thing) to determine which string is greater or if the two strings are equal.
+        /// SQLite has three built-in collating functions: BINARY, NOCASE, and RTRIM.
+        /// </summary>
         public Collate Collation { get; private set; }
 
         public CollationAttribute(Collate collation)
@@ -18,7 +23,8 @@ namespace TinySQLite.Attributes
     }
 
     /// <summary>
-    /// When SQLite compares two strings, it uses a collating sequence or collating function (two words for the same thing) to determine which string is greater or if the two strings are equal. SQLite has three built-in collating functions: BINARY, NOCASE, and RTRIM.
+    /// When SQLite compares two strings, it uses a collating sequence or collating function (two words for the same thing) to determine which string is greater or if the two strings are equal.
+    /// SQLite has three built-in collating functions: BINARY, NOCASE, and RTRIM.
     /// </summary>
     public enum Collate
     {

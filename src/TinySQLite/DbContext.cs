@@ -12,7 +12,8 @@ namespace TinySQLite
         private readonly Dictionary<Type, TableMapping> _mappings = new Dictionary<Type, TableMapping>();
         private readonly QueriesManager _queriesManager;
         private readonly bool _storeDateTimeAsTicks;
-#endregion
+        private readonly bool _removeDiacriticsOnTableNameAndColumnName;
+        #endregion
 
         /// <summary>
         /// Create a Database context
@@ -21,15 +22,23 @@ namespace TinySQLite
         /// <param name="busyTimeout">A timeout, in milliseconds, to wait when the database is locked before throwing a SqliteBusyException
         /// The default value is 0, which means to throw a SqliteBusyException immediately if the database is locked.
         /// </param>
+        /// <param name="autoCreateDatabaseFile">if true autre create database</param>
+        /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
         /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
 
-        public DbContext(string filePath, int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
+        public DbContext(
+            string filePath,
+            int busyTimeout = 0,
+            bool autoCreateDatabaseFile = true,
+            bool removeDiacriticsOnTableNameAndColumnName = true,
+            bool storeDateTimeAsTicks = false)
         {
             if (filePath == null)
             {
                 throw new ArgumentNullException($"{nameof(filePath)}");
             }
 
+            _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout}");
 
@@ -41,21 +50,32 @@ namespace TinySQLite
             }
         }
 
-        private DbContext(int busyTimeout = 0, bool autoCreateDatabaseFile = true, bool storeDateTimeAsTicks = false)
+        private DbContext(
+            int busyTimeout,
+            bool removeDiacriticsOnTableNameAndColumnName, 
+            bool storeDateTimeAsTicks)
         {
             var connection = new SqliteConnection("URI=file::memory:,version=3");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
+            _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, null);
-            if (autoCreateDatabaseFile)
-            {
-                Database.CreateFile();
-            }
         }
 
-        public static DbContext InMemory(int busyTimeout = 0, bool storeDateTimeAsTicks = false)
+        /// <summary>
+        /// Create a in memory Database context
+        /// </summary>
+        /// <param name="busyTimeout">A timeout, in milliseconds, to wait when the database is locked before throwing a SqliteBusyException
+        /// The default value is 0, which means to throw a SqliteBusyException immediately if the database is locked.
+        /// </param>
+        /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
+        /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
+        public static DbContext InMemory(
+            int busyTimeout = 0,
+            bool removeDiacriticsOnTableNameAndColumnName = true,
+            bool storeDateTimeAsTicks = false)
         {
-            return new DbContext(busyTimeout, storeDateTimeAsTicks);
+            return new DbContext(busyTimeout, removeDiacriticsOnTableNameAndColumnName, storeDateTimeAsTicks);
         }
 
         public Database Database { get; private set; }
@@ -70,7 +90,7 @@ namespace TinySQLite
             }
             else
             {
-                var mapper = new TableMapper(_storeDateTimeAsTicks);
+                var mapper = new TableMapper(_storeDateTimeAsTicks, _removeDiacriticsOnTableNameAndColumnName);
                 mapping = mapper.Map(type);
                 _mappings.Add(type, mapping);
             }
