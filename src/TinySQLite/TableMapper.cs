@@ -31,7 +31,9 @@ namespace TinySQLite
             mapping.MappedType = type;
             mapping.TableName = GetTableName(type);
             mapping.MappedType = type;
-            mapping.Columns = GetColums(type);
+            var columnsDictionaries = GetColums(type);
+            mapping.Columns = columnsDictionaries.Select(a => a.Key).ToArray();
+            mapping.Indexes = GetTableIndexes(columnsDictionaries);
 
             if (mapping.Columns.Count(c => c.IsAutoIncrement) > 1)
             {
@@ -41,23 +43,26 @@ namespace TinySQLite
             return mapping;
         }
 
-        private TableColumn[] GetColums(Type type)
+        private Dictionary<TableColumn, IEnumerable<Attribute>> GetColums(Type type)
         {
             var properties = type.GetRuntimeProperties();
-            var columns = new List<TableColumn>();
-           
+            var columns = new Dictionary<TableColumn, IEnumerable<Attribute>>();
+
             foreach (var property in properties)
             {
                 string columnType = null;
-                if (TryToGetColumnType(property, out columnType))
+                
+                var attributes = property.GetCustomAttributes();
+
+                if (TryToGetColumnType(property, attributes, out columnType))
                 {
-                    var column = GetTableColumn(property);
+                    var column = GetTableColumn(property, attributes);
                     column.ColumnType = columnType;
-                    columns.Add(column);
+                    columns.Add(column, attributes);
                 }
             }
 
-            return columns.ToArray();
+            return columns;
         }
 
         private string GetTableName(Type type)
@@ -72,22 +77,60 @@ namespace TinySQLite
             return RemoveDiacriticsIfNeeded(type.Name);
         }
 
-        private TableColumn GetTableColumn(PropertyInfo info)
+        private TableColumn GetTableColumn(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
             var colum = new TableColumn();
             colum.PropertyName = info.Name;
-            var attributes = info.GetCustomAttributes();
             colum.IsPrimaryKey = GeColumnIsPrimaryKey(info, attributes);
             colum.IsAutoIncrement = GeColumnIsAutoInc(info, attributes);
 
             colum.ColumnName = GeColumnName(info, attributes);
             colum.IsNullable = GetColumnIsNullable(info, attributes);
-            colum.IsUnique = GeColumnIsUnique(info, attributes);
             colum.Collate = GetColumnCollating(info, attributes);
             return colum;
         }
 
-#region Column Mapping
+        private TableIndex[] GetTableIndexes(Dictionary<TableColumn, IEnumerable<Attribute>> tableColumns)
+        {
+            var dictionary = new Dictionary<TableIndex, List<Tuple<TableColumn, int>>>();
+
+            foreach (var column in tableColumns)
+            {
+                var attribute = column.Value.OfType<IndexedAttribute>().FirstOrDefault();
+
+                if (attribute != null)
+                {
+                    var currentIndex = dictionary.FirstOrDefault(i => i.Key.Name == attribute.Name);
+                    if (currentIndex.Key != null)
+                    {
+                        currentIndex.Value.Add(new Tuple<TableColumn, int>(column.Key, attribute.Order));
+
+                        if (currentIndex.Key.IsUnique != attribute.IsUnique)
+                        {
+                            throw new AllColumnsInIndexMustHaveTheSameIsUniqueValueException();
+                        }
+                    }
+                    else
+                    {
+                        var tableIndex = new TableIndex();
+                        tableIndex.IsUnique = attribute.IsUnique;
+                        tableIndex.Name = attribute.Name;
+                        dictionary.Add(tableIndex, new List<Tuple<TableColumn, int>>() { new Tuple<TableColumn, int>(column.Key, attribute.Order) } );
+                    }
+                }
+            }
+
+            var indexes = new List<TableIndex>();
+            foreach (var index in dictionary)
+            {
+                index.Key.Columns = index.Value.OrderBy(v => v.Item2).Select( v=>v.Item1).ToArray();
+                indexes.Add(index.Key);
+            }
+
+            return indexes.ToArray();
+        }
+
+        #region Column Mapping
         private bool GetColumnIsNullable(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
             var attribute = attributes.FirstOrDefault(a => a is ColumnNotNullableAttribute) as ColumnNotNullableAttribute;
@@ -120,7 +163,7 @@ namespace TinySQLite
 
         private string GeColumnName(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a=> a is ColumnAttribute) as ColumnAttribute;
+            var attribute = attributes.FirstOrDefault(a => a is ColumnAttribute) as ColumnAttribute;
 
             if (attribute != null)
             {
@@ -144,17 +187,18 @@ namespace TinySQLite
 
         private bool GeColumnIsAutoInc(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a => a is PrimaryKeyAttribute) as PrimaryKeyAttribute;
+            var attribute = attributes.OfType<PrimaryKeyAttribute>().FirstOrDefault();
 
             if (attribute != null && attribute.AutoIncrement)
             {
                 var type = info.PropertyType;
 
-                if(type == typeof(long) ||
+                // TODO : check if all theses types are auto incrementable in SQLite
+                if (type == typeof(long) ||
                     type == typeof(ulong) ||
                     type == typeof(int) ||
                     type == typeof(uint) ||
-                    type == typeof(byte)||
+                    type == typeof(byte) ||
                     type == typeof(sbyte) ||
                     type == typeof(short) ||
                     type == typeof(sbyte))
@@ -168,23 +212,10 @@ namespace TinySQLite
             return false;
         }
 
-
-        private bool GeColumnIsUnique(PropertyInfo info, IEnumerable<Attribute> attributes)
-        {
-            var attribute = attributes.FirstOrDefault(a=> a is UniqueAttribute) as UniqueAttribute;
-
-            if (attribute != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private Collate GetColumnCollating(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a => a is CollationAttribute) as CollationAttribute;
-
+            var attribute = attributes.OfType<CollationAttribute>().FirstOrDefault();
+            
             if (attribute != null)
             {
                 return attribute.Collation;
@@ -192,11 +223,11 @@ namespace TinySQLite
             return Collate.Binary;
         }
 
-        private bool TryToGetColumnType(PropertyInfo info, out string columnType)
+        private bool TryToGetColumnType(PropertyInfo info, IEnumerable<Attribute> attributes, out string columnType)
         {
             columnType = null;
 
-            
+
             if (!info.CanRead || !info.CanWrite)
             {
                 return false;
@@ -211,7 +242,7 @@ namespace TinySQLite
                 return false;
             }
 
-            if (info.GetCustomAttribute<IgnoreAttribute>() != null)
+            if (attributes.Any(a => a is IgnoreAttribute))
             {
                 return false;
             }
@@ -229,7 +260,7 @@ namespace TinySQLite
             {
                 var maxLengthAttr = info.GetCustomAttribute<MaxLengthAttribute>();
 
-                if(maxLengthAttr != null)
+                if (maxLengthAttr != null)
                 {
                     columnType = $"VARCHAR({maxLengthAttr.Value})";
                     return true;
@@ -270,7 +301,7 @@ namespace TinySQLite
                 return true;
             }
 
-           
+
             if (info.PropertyType == typeof(byte) ||
                 info.PropertyType == typeof(sbyte) ||
                  info.PropertyType == typeof(byte?) ||

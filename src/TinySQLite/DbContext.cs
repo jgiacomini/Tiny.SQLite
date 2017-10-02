@@ -55,9 +55,10 @@ namespace TinySQLite
             bool removeDiacriticsOnTableNameAndColumnName, 
             bool storeDateTimeAsTicks)
         {
+            _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
+           
             var connection = new SqliteConnection("URI=file::memory:,version=3");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
-            _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, null);
         }

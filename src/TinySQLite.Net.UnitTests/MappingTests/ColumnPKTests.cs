@@ -49,7 +49,7 @@ namespace TinySQLite.Net.UnitTests
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
             var table = context.Table<DoublePrimaryKey>();
-            await table.CreateTableAsync();
+            await table.CreateAsync();
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace TinySQLite.Net.UnitTests
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
             var table = context.Table<PrimaryTable>();
-            await table.CreateTableAsync();
+            await table.CreateAsync();
         }
 
     }

@@ -114,7 +114,7 @@ namespace TinySQLite.Net.UnitTests
             try
             {
                 var table = context.Table<SimpleTableWithAllTypes>();
-                await table.CreateTableAsync();
+                await table.CreateAsync();
 
                 Assert.IsTrue(await table.ExistsAsync());
 

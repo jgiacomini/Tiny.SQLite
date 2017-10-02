@@ -13,6 +13,4 @@ namespace TinySQLite.Attributes
             Value = length;
         }
     }
-
-
 }

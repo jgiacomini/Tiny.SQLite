@@ -17,7 +17,7 @@ namespace TinySQLite
             _queriesManager = queriesManager;
         }
 
-        public Task CreateTableAsync()
+        public Task CreateAsync()
         {
             var queryBuilder = new StringBuilder($"CREATE TABLE IF NOT EXISTS {_mapping.TableName.EscapeTableName()}(\n");
 
@@ -71,13 +71,20 @@ namespace TinySQLite
             }
             queryBuilder.AppendLine();
 
-            foreach (var column in _mapping.Columns)
+            foreach (var index in _mapping.Indexes)
             {
-                if (column.IsUnique)
+                var columns = string.Join(",", index.Columns.Select(t => t.ColumnName.EscapeColumnName()));
+
+                if (index.IsUnique)
                 {
-                    queryBuilder.Append($"CREATE UNIQUE INDEX IF NOT EXISTS {("IX_UNIQUE_" + _mapping.TableName).EscapeColumnName()} ON {_mapping.TableName.EscapeTableName()}({column.ColumnName.EscapeColumnName()});");
+                    queryBuilder.Append($"CREATE UNIQUE INDEX IF NOT EXISTS {index.Name} ON {_mapping.TableName.EscapeTableName()}({columns});");
+                }
+                else
+                {
+                    queryBuilder.Append($"CREATE INDEX IF NOT EXISTS {index.Name} ON {_mapping.TableName.EscapeTableName()}({columns});");
                 }
             }
+
 
             return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString());
         }
@@ -102,7 +109,7 @@ namespace TinySQLite
             var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'");
             return Convert.ToBoolean(result);
         }
-        public Task DropTableAsync()
+        public Task DropAsync()
         {
             var query = $"DROP TABLE IF EXISTS \"{_mapping.TableName.EscapeTableName()}\";";
             return _queriesManager.ExecuteNonQueryAsync(query);

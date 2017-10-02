@@ -102,6 +102,7 @@
     <Compile Include="DbContextTests.cs" />
     <Compile Include="MappingTests\BaseColumnTest.cs" />
     <Compile Include="BaseDatabaseTests.cs" />
+    <Compile Include="MappingTests\ColumnIndexesTests.cs" />
     <Compile Include="MappingTests\ColumnPKTests.cs" />
     <Compile Include="MappingTests\ColumnAutoIncTests.cs" />
     <Compile Include="MappingTests\ColumnCollateTests.cs" />

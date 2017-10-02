@@ -71,7 +71,7 @@ namespace TinySQLite.Net.UnitTests
         {
             var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
             var table = context.Table<AutoIncrement>();
-            await table.CreateTableAsync();
+            await table.CreateAsync();
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace TinySQLite.Net.UnitTests
             try
             {
                 var table = context.Table<BadAutoIncrement>();
-                await table.CreateTableAsync();
+                await table.CreateAsync();
             }
             catch (TypeNotSupportedAutoIncrementException)
             {
@@ -92,7 +92,7 @@ namespace TinySQLite.Net.UnitTests
 
             if (exceptionThrown == false)
             {
-                Assert.Fail("The creation of this table must throw TypeNotSupportedAutoIncrementException");
+                Assert.Fail($"The creation of this table must throw {nameof(TypeNotSupportedAutoIncrementException)}");
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TinySQLite.Attributes;
@@ -15,7 +15,7 @@ namespace TinySQLite.Net.UnitTests
         }
         class UniqueColumnsTable
         {
-            [Unique()]
+            [Indexed("IX_UQ_UNIQUE", 0, IsUnique = true)]
             public string Unique { get; set; }
 
             public string NotUnique { get; set; }
@@ -28,12 +28,17 @@ namespace TinySQLite.Net.UnitTests
             var mapping = mapper.Map<UniqueColumnsTable>();
             var column = GetColumnByPropertyName(mapping,
                 nameof(UniqueColumnsTable.Unique));
+            var index = mapping.Indexes.FirstOrDefault(i => i.Columns.Contains(column));
 
-            Assert.IsTrue(column.IsUnique,
-                "string without attribute must be nullable");
+            Assert.IsNotNull(index,
+                $"column {nameof(UniqueColumnsTable.Unique)} must have index");
+            Assert.IsTrue(index.IsUnique,
+                $"column {nameof(UniqueColumnsTable.Unique)} must have unique index");
 
             var columnNotUnique = GetColumnByPropertyName(mapping, nameof(UniqueColumnsTable.NotUnique));
-            Assert.IsFalse(columnNotUnique.IsUnique,
+            var noIndex = mapping.Indexes.FirstOrDefault(i => i.Columns.Contains(columnNotUnique));
+
+            Assert.IsNull(noIndex,
                 "column without attribute Unique must be not unique");
         }
 
@@ -45,7 +50,7 @@ namespace TinySQLite.Net.UnitTests
             try
             {
                 var table = context.Table<UniqueColumnsTable>();
-                await table.CreateTableAsync();
+                await table.CreateAsync();
                 Assert.IsTrue(await table.ExistsAsync());
             }
             catch (Exception ex)
