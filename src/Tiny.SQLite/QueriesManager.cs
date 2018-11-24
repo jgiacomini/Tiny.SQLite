@@ -36,7 +36,7 @@ namespace Tiny.SQLite
             }
         }
 
-        public async Task ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
+        public async Task<int> ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
         {
             using (var monitor = new QueryMonitor(sql, _internalLogger))
             {
@@ -44,7 +44,7 @@ namespace Tiny.SQLite
                 var command = _connection.CreateCommand();
 
                 command.CommandText = sql;
-                await command.ExecuteNonQueryAsync(cancellationToken);
+                return await command.ExecuteNonQueryAsync(cancellationToken);
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace Tiny.SQLite
@@ -84,6 +86,16 @@ namespace Tiny.SQLite
             }
 
             return new TableQuery<T>(mapping, _queriesManager);
+        }
+
+        public Task<object> ExecuteScalarAsync(string sql, CancellationToken cancellationToken)
+        {
+            return _queriesManager.ExecuteScalarAsync(sql, cancellationToken);
+        }
+
+        public Task<int> ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
+        {
+            return _queriesManager.ExecuteNonQueryAsync(sql, cancellationToken);
         }
 
         #region IDisposable Support
