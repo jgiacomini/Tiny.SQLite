@@ -28,9 +28,11 @@ namespace Tiny.SQLite
 
         public TableMapping Map(Type type)
         {
-            TableMapping mapping = new TableMapping();
-            mapping.MappedType = type;
-            mapping.TableName = GetTableName(type);
+            TableMapping mapping = new TableMapping
+            {
+                MappedType = type,
+                TableName = GetTableName(type)
+            };
             mapping.MappedType = type;
             var columnsDictionaries = GetColums(type);
             mapping.Columns = columnsDictionaries.Select(a => a.Key).ToArray();
@@ -51,11 +53,9 @@ namespace Tiny.SQLite
 
             foreach (var property in properties)
             {
-                string columnType = null;
-
                 var attributes = property.GetCustomAttributes();
 
-                if (TryToGetColumnType(property, attributes, out columnType))
+                if (TryToGetColumnType(property, attributes, out string columnType))
                 {
                     var column = GetTableColumn(property, attributes);
                     column.ColumnType = columnType;
@@ -80,14 +80,16 @@ namespace Tiny.SQLite
 
         private TableColumn GetTableColumn(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var colum = new TableColumn();
-            colum.PropertyName = info.Name;
-            colum.IsPrimaryKey = GeColumnIsPrimaryKey(info, attributes);
-            colum.IsAutoIncrement = GeColumnIsAutoInc(info, attributes);
+            var colum = new TableColumn
+            {
+                PropertyName = info.Name,
+                IsPrimaryKey = GeColumnIsPrimaryKey(info, attributes),
+                IsAutoIncrement = GeColumnIsAutoInc(info, attributes),
 
-            colum.ColumnName = GeColumnName(info, attributes);
-            colum.IsNullable = GetColumnIsNullable(info, attributes);
-            colum.Collate = GetColumnCollating(info, attributes);
+                ColumnName = GeColumnName(info, attributes),
+                IsNullable = GetColumnIsNullable(info, attributes),
+                Collate = GetColumnCollating(info, attributes)
+            };
             return colum;
         }
 
@@ -113,9 +115,11 @@ namespace Tiny.SQLite
                     }
                     else
                     {
-                        var tableIndex = new TableIndex();
-                        tableIndex.IsUnique = attribute.IsUnique;
-                        tableIndex.Name = attribute.Name;
+                        var tableIndex = new TableIndex
+                        {
+                            IsUnique = attribute.IsUnique,
+                            Name = attribute.Name
+                        };
                         dictionary.Add(tableIndex, new List<Tuple<TableColumn, int>>() { new Tuple<TableColumn, int>(column.Key, attribute.Order) });
                     }
                 }
@@ -134,9 +138,7 @@ namespace Tiny.SQLite
         #region Column Mapping
         private bool GetColumnIsNullable(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a => a is ColumnNotNullableAttribute) as ColumnNotNullableAttribute;
-
-            if (attribute != null)
+            if (attributes.FirstOrDefault(a => a is ColumnNotNullableAttribute) is ColumnNotNullableAttribute attribute)
             {
                 return false;
             }
@@ -164,9 +166,7 @@ namespace Tiny.SQLite
 
         private string GeColumnName(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a => a is ColumnAttribute) as ColumnAttribute;
-
-            if (attribute != null)
+            if (attributes.FirstOrDefault(a => a is ColumnAttribute) is ColumnAttribute attribute)
             {
                 return RemoveDiacriticsIfNeeded(attribute.Name);
             }
@@ -176,9 +176,7 @@ namespace Tiny.SQLite
 
         private bool GeColumnIsPrimaryKey(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
-            var attribute = attributes.FirstOrDefault(a => a is PrimaryKeyAttribute) as PrimaryKeyAttribute;
-
-            if (attribute != null)
+            if (attributes.FirstOrDefault(a => a is PrimaryKeyAttribute) is PrimaryKeyAttribute attribute)
             {
                 return true;
             }
