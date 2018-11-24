@@ -44,7 +44,7 @@ namespace TinySQLite
                 }
                 if (column.Collate != Collate.Binary)
                 {
-                    queryBuilder.Append($"COLLATE {column.Collate} ");
+                    queryBuilder.Append($"COLLATE {GetCollate(column.Collate)} ");
                 }
 
                 if (column == lastColumn)
