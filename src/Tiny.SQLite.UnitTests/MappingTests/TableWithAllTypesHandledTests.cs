@@ -109,7 +109,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithSimpleTypes()
         {
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
 
             try
             {

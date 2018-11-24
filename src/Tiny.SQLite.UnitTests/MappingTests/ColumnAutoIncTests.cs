@@ -69,7 +69,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTable()
         {
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
             var table = context.Table<AutoIncrement>();
             await table.CreateAsync();
         }
@@ -78,7 +78,7 @@ namespace TinySQLite.Net.UnitTests
         public async Task AutoIncOnGuidColumn()
         {
             bool exceptionThrown = false;
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
 
             try
             {

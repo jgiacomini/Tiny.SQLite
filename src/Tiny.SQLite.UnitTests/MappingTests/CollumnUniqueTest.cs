@@ -45,7 +45,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithUniqueColumnTypes()
         {
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
 
             try
             {

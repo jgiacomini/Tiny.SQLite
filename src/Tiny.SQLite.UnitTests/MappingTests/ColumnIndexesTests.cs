@@ -72,7 +72,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithSimpleIndex()
         {
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
             var table = context.Table<IndexTable>();
             await table.CreateAsync();
         }
@@ -91,7 +91,7 @@ namespace TinySQLite.Net.UnitTests
             Assert.IsNotNull(index, $"Column '{nameof(IndexOnMultiColumns.Index1)}' must have an index");
             Assert.IsFalse(index.IsUnique, $"Column '{nameof(IndexOnMultiColumns.Index2)}' must be not unique");
 
-            var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+            var context = new DbContext(_pathOfDb);
             var table = context.Table<IndexOnMultiColumns>();
             await table.CreateAsync();
         }
@@ -103,7 +103,7 @@ namespace TinySQLite.Net.UnitTests
 
             try
             {
-                var context = new DbContext(_pathOfDb, autoCreateDatabaseFile: true);
+                var context = new DbContext(_pathOfDb);
 
                 var table = context.Table<IndexOnMultiColumnsButWithNotDifferentUniqueValue>();
                 await table.CreateAsync();

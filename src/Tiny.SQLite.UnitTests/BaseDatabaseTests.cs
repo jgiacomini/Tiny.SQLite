@@ -8,23 +8,25 @@ namespace TinySQLite.Net.UnitTests
     {
         protected string _pathOfDb;
         private readonly bool _autoCreateDatabase;
+        
         public BaseDatabaseTests(bool autoCreateDatabase)
         {
             _autoCreateDatabase = autoCreateDatabase;
         }
 
+        public TestContext TestContext { get; set; }
+
         [TestInitialize]
-        public async Task TestInitializeAsync()
+        public void TestInitialize()
         {
             if (string.IsNullOrEmpty(_pathOfDb))
             {
-                _pathOfDb = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+                _pathOfDb = Path.Combine(Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), $"{TestContext.TestName}.db"));
             }
 
-            if (_autoCreateDatabase)
+            if (File.Exists(_pathOfDb))
             {
-                var context = new DbContext(_pathOfDb);
-                await context.Database.CreateFileAsync();
+                File.Delete(_pathOfDb);
             }
         }
 
@@ -33,7 +35,7 @@ namespace TinySQLite.Net.UnitTests
         {
             if (string.IsNullOrEmpty(_pathOfDb))
             {
-                if (!File.Exists(_pathOfDb))
+                if (File.Exists(_pathOfDb))
                 {
                     File.Delete(_pathOfDb);
                 }

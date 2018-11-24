@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.IO;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace TinySQLite
@@ -26,17 +24,6 @@ namespace TinySQLite
         void OnLog(string onLog)
         {
             Log?.Invoke(onLog);
-        }
-
-        /// <summary>
-        /// Create database
-        /// </summary>
-        public async Task CreateFileAsync()
-        {
-            if (_filePath != null && !File.Exists(_filePath))
-            {
-                var result = await _queriesManager.ExecuteScalarAsync(_filePath);
-            }
         }
         
         /// <summary>
