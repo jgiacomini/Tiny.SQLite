@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiny.SQLite", "Tiny.SQLite\Tiny.SQLite.csproj", "{69656669-D5CC-4C48-B88D-61E770AEB5B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiny.SQLite.UnitTests", "Tiny.SQLite.UnitTests\Tiny.SQLite.UnitTests.csproj", "{05063330-B7F6-41A1-95BB-04FDA9CF1718}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69656669-D5CC-4C48-B88D-61E770AEB5B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69656669-D5CC-4C48-B88D-61E770AEB5B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69656669-D5CC-4C48-B88D-61E770AEB5B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69656669-D5CC-4C48-B88D-61E770AEB5B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05063330-B7F6-41A1-95BB-04FDA9CF1718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05063330-B7F6-41A1-95BB-04FDA9CF1718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05063330-B7F6-41A1-95BB-04FDA9CF1718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05063330-B7F6-41A1-95BB-04FDA9CF1718}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B65BA38-AB1C-4748-91C8-DDD22E003553}
+	EndGlobalSection
+EndGlobal

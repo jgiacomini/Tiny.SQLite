@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using Mono.Data.Sqlite;
 
 namespace TinySQLite
 {
@@ -31,11 +31,11 @@ namespace TinySQLite
         /// <summary>
         /// Create database
         /// </summary>
-        public void CreateFile()
+        public async Task CreateFileAsync()
         {
             if (_filePath != null && !File.Exists(_filePath))
             {
-                SqliteConnection.CreateFile(_filePath);
+                var result = await _queriesManager.ExecuteScalarAsync(_filePath);
             }
         }
         

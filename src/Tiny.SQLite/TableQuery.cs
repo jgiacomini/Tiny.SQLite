@@ -109,11 +109,11 @@ namespace TinySQLite
             var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'");
             return Convert.ToBoolean(result);
         }
+
         public Task DropAsync()
         {
             var query = $"DROP TABLE IF EXISTS \"{_mapping.TableName.EscapeTableName()}\";";
             return _queriesManager.ExecuteNonQueryAsync(query);
         }
-
     }
 }

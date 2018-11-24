@@ -22,7 +22,7 @@ namespace TinySQLite.Net.UnitTests
         {
             DbContext dbContext = new DbContext(_pathOfDb, 0, false);
             
-            dbContext.Database.CreateFile();
+            dbContext.Database.CreateFileAsync();
 
             Assert.IsTrue(File.Exists(_pathOfDb));
         }
@@ -31,7 +31,7 @@ namespace TinySQLite.Net.UnitTests
         public void CreateInMemoryDatabase()
         {
             DbContext dbContext = DbContext.InMemory();
-            dbContext.Database.CreateFile();
+            dbContext.Database.CreateFileAsync();
 
             Assert.IsTrue(File.Exists(_pathOfDb));
         }

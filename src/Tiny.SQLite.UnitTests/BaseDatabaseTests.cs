@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TinySQLite.Net.UnitTests
@@ -13,7 +14,7 @@ namespace TinySQLite.Net.UnitTests
         }
 
         [TestInitialize]
-        public void TestInitialize()
+        public async Task TestInitializeAsync()
         {
             if (string.IsNullOrEmpty(_pathOfDb))
             {
@@ -23,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
             if (_autoCreateDatabase)
             {
                 var context = new DbContext(_pathOfDb);
-                context.Database.CreateFile();
+                await context.Database.CreateFileAsync();
             }
         }
 

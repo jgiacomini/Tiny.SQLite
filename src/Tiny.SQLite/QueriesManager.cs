@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
-using Mono.Data.Sqlite;
+using Microsoft.Data.Sqlite;
 
 namespace TinySQLite
 {

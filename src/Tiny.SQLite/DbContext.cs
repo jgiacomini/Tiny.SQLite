@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
+using Microsoft.Data.Sqlite;
 
 namespace TinySQLite
 {
@@ -46,7 +46,7 @@ namespace TinySQLite
             Database = new Database(_queriesManager, filePath);
             if (autoCreateDatabaseFile)
             {
-                Database.CreateFile();
+                Database.CreateFileAsync();
             }
         }
 
@@ -57,7 +57,7 @@ namespace TinySQLite
         {
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
            
-            var connection = new SqliteConnection("URI=file::memory:,version=3");
+            var connection = new SqliteConnection("Data Source=file::memory:,version=3;");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, null);
