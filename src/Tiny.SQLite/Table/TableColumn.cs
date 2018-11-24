@@ -1,14 +1,15 @@
-﻿using Tiny.SQLite.Attributes;
+﻿using System.Reflection;
+using Tiny.SQLite.Attributes;
 
 namespace Tiny.SQLite
 {
-    public class TableColumn
+    internal class TableColumn
     {
         internal TableColumn()
         {
         }
 
-        public string PropertyName { get; internal set; }
+        public PropertyInfo PropertyInfo { get; internal set; }
         public string ColumnType { get; internal set; }
         public string ColumnName { get; internal set; }
         public bool IsPrimaryKey { get; internal set; }

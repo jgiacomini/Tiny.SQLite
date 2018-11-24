@@ -3,7 +3,7 @@ using Tiny.SQLite.Attributes;
 
 namespace Tiny.SQLite
 {
-    public class TableIndex
+    internal class TableIndex
     {
         internal TableIndex()
         {
