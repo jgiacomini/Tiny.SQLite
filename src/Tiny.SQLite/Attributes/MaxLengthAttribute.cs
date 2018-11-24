@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TinySQLite.Attributes
+namespace Tiny.SQLite.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class MaxLengthAttribute : Attribute

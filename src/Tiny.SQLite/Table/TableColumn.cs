@@ -1,6 +1,6 @@
-﻿using TinySQLite.Attributes;
+﻿using Tiny.SQLite.Attributes;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public class TableColumn
     {

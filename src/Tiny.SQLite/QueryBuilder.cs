@@ -1,4 +1,4 @@
-﻿namespace TinySQLite
+﻿namespace Tiny.SQLite
 {
     internal static class QueryBuilder
     {

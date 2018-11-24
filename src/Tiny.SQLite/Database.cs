@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public sealed class Database
     {

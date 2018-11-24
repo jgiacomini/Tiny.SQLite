@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TinySQLite.Attributes
+namespace Tiny.SQLite.Attributes
 {
     /// <summary>
     /// Every column of every table has an associated collating function.

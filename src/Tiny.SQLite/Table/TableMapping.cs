@@ -1,5 +1,5 @@
 ﻿using System;
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public class TableMapping
     {

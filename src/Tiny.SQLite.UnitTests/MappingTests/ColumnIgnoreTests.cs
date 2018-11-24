@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TinySQLite.Attributes;
+using Tiny.SQLite.Attributes;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class ColumnIgnoreTests : BaseColumnTest

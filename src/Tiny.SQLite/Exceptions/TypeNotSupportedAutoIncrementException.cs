@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TinySQLite.Exceptions
+namespace Tiny.SQLite.Exceptions
 {
     public class TypeNotSupportedAutoIncrementException : Exception
     {

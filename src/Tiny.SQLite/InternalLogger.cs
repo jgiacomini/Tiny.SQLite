@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     internal sealed class InternalLogger : IDisposable
     {

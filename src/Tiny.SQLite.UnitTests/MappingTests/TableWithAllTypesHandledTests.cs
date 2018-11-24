@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class TableWithAllTypesHandledTests : BaseDatabaseTests

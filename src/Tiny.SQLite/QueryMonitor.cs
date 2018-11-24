@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     internal sealed class QueryMonitor : IDisposable
     {
@@ -22,7 +22,7 @@ namespace TinySQLite
         #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
 
-        protected void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {

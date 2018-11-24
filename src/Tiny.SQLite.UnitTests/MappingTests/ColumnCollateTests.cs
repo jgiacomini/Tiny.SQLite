@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TinySQLite.Attributes;
+using Tiny.SQLite.Attributes;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class ColumnCollateTests : BaseColumnTest

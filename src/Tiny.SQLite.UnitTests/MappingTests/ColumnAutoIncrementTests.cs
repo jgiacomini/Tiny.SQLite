@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TinySQLite.Attributes;
-using TinySQLite.Exceptions;
+using Tiny.SQLite.Attributes;
+using Tiny.SQLite.Exceptions;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class ColumnAutoIncrementTests : BaseColumnTest

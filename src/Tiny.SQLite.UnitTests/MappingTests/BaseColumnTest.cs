@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     public abstract class BaseColumnTest : BaseDatabaseTests
     {

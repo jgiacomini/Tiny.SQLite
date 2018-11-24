@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TinySQLite.Attributes;
+using Tiny.SQLite.Attributes;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class ColumnPKTests : BaseColumnTest
@@ -24,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
 
         public class PrimaryString
         {
-            [PrimaryKey()]
+            [PrimaryKey]
             public string PrimaryString1 { get; set; }
         }
 

@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using TinySQLite.Attributes;
-using TinySQLite.Exceptions;
+using Tiny.SQLite.Attributes;
+using Tiny.SQLite.Exceptions;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public class TableMapper
     {

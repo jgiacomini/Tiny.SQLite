@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     public abstract class BaseDatabaseTests
     {
@@ -20,7 +20,7 @@ namespace TinySQLite.Net.UnitTests
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                PathOfDb = Path.Combine(directoryPath, $"{TestContext.TestName}.db");
+                PathOfDb = Path.Combine(directoryPath, $"{GetType().Name}_{TestContext.TestName}.db");
             }
 
             if (File.Exists(PathOfDb))
@@ -32,7 +32,7 @@ namespace TinySQLite.Net.UnitTests
         [TestCleanup]
         public void TestCleanup()
         {
-            if (string.IsNullOrEmpty(PathOfDb))
+            if (!string.IsNullOrEmpty(PathOfDb))
             {
                 if (File.Exists(PathOfDb))
                 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TinySQLite.Exceptions
+namespace Tiny.SQLite.Exceptions
 {
     public class TableHaveMoreThanOneAutoIncrementedColumnException : Exception
     {

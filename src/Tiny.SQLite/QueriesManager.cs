@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     internal class QueriesManager : IDisposable
     {

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TinySQLite.Attributes;
+using Tiny.SQLite.Attributes;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public class TableQuery<T>
     {
@@ -112,7 +112,7 @@ namespace TinySQLite
 
         public Task DropAsync(CancellationToken cancellationToken = default)
         {
-            var query = $"DROP TABLE IF EXISTS \"{_mapping.TableName.EscapeTableName()}\";";
+            var query = $"DROP TABLE IF EXISTS {_mapping.TableName.EscapeTableName()};";
             return _queriesManager.ExecuteNonQueryAsync(query, cancellationToken);
         }
     }

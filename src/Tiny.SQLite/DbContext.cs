@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 
-namespace TinySQLite
+namespace Tiny.SQLite
 {
     public sealed class DbContext : IDisposable
     {
@@ -89,7 +89,7 @@ namespace TinySQLite
         #region IDisposable Support
         private bool _disposedValue = false;
 
-        protected void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {

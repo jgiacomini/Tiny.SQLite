@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TinySQLite.Attributes;
+using Tiny.SQLite.Attributes;
 
-namespace TinySQLite.Net.UnitTests
+namespace Tiny.SQLite.UnitTests
 {
     [TestClass]
     public class ColumnUniqueTest : BaseColumnTest
@@ -45,17 +45,18 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithUniqueColumnTypes()
         {
-            var context = new DbContext(PathOfDb);
-
-            try
+            using (var context = new DbContext(PathOfDb))
             {
-                var table = context.Table<UniqueColumnsTable>();
-                await table.CreateAsync();
-                Assert.IsTrue(await table.ExistsAsync());
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
+                try
+                {
+                    var table = context.Table<UniqueColumnsTable>();
+                    await table.CreateAsync();
+                    Assert.IsTrue(await table.ExistsAsync());
+                }
+                catch (Exception ex)
+                {
+                    Assert.Fail(ex.Message);
+                }
             }
         }
     }
