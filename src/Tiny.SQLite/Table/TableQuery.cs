@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -86,7 +88,80 @@ namespace Tiny.SQLite
                 }
             }
 
-            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), cancellationToken);
+            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), null, cancellationToken);
+        }
+
+        public Task<int> InsertAsync(T item, CancellationToken cancellationToken = default)
+        {
+            return InsertAsync(new[] { item }, cancellationToken);
+        }
+
+        public async Task<int> InsertAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
+        {
+            var queryBuilder = new StringBuilder($"INSERT INTO {_mapping.TableName.EscapeTableName()} (");
+
+            var columnsFiltred = _mapping.Columns.Where(c => !c.IsAutoIncrement);
+            var lastColumn = columnsFiltred.Last();
+            foreach (var column in columnsFiltred)
+            {
+                queryBuilder.Append($"{column.ColumnName.EscapeColumnName()}");
+
+                if (column == lastColumn)
+                {
+                    queryBuilder.Append(") ");
+                }
+                else
+                {
+                    queryBuilder.Append(",");
+                }
+            }
+
+            queryBuilder.Append(" VALUES ");
+
+            var parameters = new List<SqliteParameter>();
+            var count = items.Count();
+            for (int indexItem = 0; indexItem < count; indexItem++)
+            {
+                var item = items.ElementAt(indexItem);
+
+                queryBuilder.Append("(");
+                for (int i = 0; i < columnsFiltred.Count(); i++)
+                {
+                    var column = columnsFiltred.ElementAt(i);
+                    var value = column.PropertyInfo.GetValue(item);
+                    var paramName = $"@param{indexItem}_{i}";
+
+                    var parameter = new SqliteParameter(paramName, value);
+
+                    if (column.PropertyInfo.DeclaringType == typeof(byte[]))
+                    {
+                        parameter.DbType = System.Data.DbType.Binary;
+                    }
+
+                    parameters.Add(parameter);
+                    queryBuilder.Append(paramName);
+
+                    if (column == lastColumn)
+                    {
+                        queryBuilder.Append(") ");
+                    }
+                    else
+                    {
+                        queryBuilder.Append(", ");
+                    }
+                }
+
+                if (indexItem < count - 1)
+                {
+                    queryBuilder.Append(", ");
+                }
+
+                queryBuilder.AppendLine();
+            }
+
+            queryBuilder.Append(";");
+
+            return await _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), parameters, cancellationToken);
         }
 
         private string GetCollate(Collate collate)
@@ -113,7 +188,14 @@ namespace Tiny.SQLite
         public Task DropAsync(CancellationToken cancellationToken = default)
         {
             var query = $"DROP TABLE IF EXISTS {_mapping.TableName.EscapeTableName()};";
-            return _queriesManager.ExecuteNonQueryAsync(query, cancellationToken);
+            return _queriesManager.ExecuteNonQueryAsync(query, null, cancellationToken);
+        }
+
+        public async Task<long> CountAsync(CancellationToken cancellationToken = default)
+        {
+            var query = $"SELECT COUNT(*) FROM {_mapping.TableName.EscapeTableName()};";
+
+            return (long)await _queriesManager.ExecuteScalarAsync(query, cancellationToken);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Tiny.SQLite
 {
-    public class TableMapping
+    internal class TableMapping
     {
         internal TableMapping()
         {

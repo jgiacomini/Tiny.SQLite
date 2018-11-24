@@ -9,7 +9,7 @@ using Tiny.SQLite.Exceptions;
 
 namespace Tiny.SQLite
 {
-    public class TableMapper
+    internal class TableMapper
     {
         private readonly bool _storeDateTimeAsTicks;
         private readonly bool _removeDiacriticsOnTableNameAndColumnName;
@@ -82,7 +82,7 @@ namespace Tiny.SQLite
         {
             var colum = new TableColumn
             {
-                PropertyName = info.Name,
+                PropertyInfo = info,
                 IsPrimaryKey = GeColumnIsPrimaryKey(info, attributes),
                 IsAutoIncrement = GeColumnIsAutoInc(info, attributes),
 
@@ -156,7 +156,7 @@ namespace Tiny.SQLite
                 return true;
             }
 
-            if (info.PropertyType == typeof(byte[]) || info.PropertyType == typeof(sbyte[]))
+            if (info.PropertyType == typeof(byte[]))
             {
                 return true;
             }
@@ -314,8 +314,7 @@ namespace Tiny.SQLite
                 return true;
             }
 
-            if (info.PropertyType == typeof(byte[]) ||
-                info.PropertyType == typeof(sbyte[]))
+            if (info.PropertyType == typeof(byte[]))
             {
                 columnType = "BLOB";
                 return true;

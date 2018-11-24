@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,15 +37,27 @@ namespace Tiny.SQLite
             }
         }
 
-        public async Task<int> ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
+        public async Task<int> ExecuteNonQueryAsync(string sql, IEnumerable<SqliteParameter> parameters,  CancellationToken cancellationToken)
         {
             using (var monitor = new QueryMonitor(sql, _internalLogger))
             {
                 await OpenConnectionAsync(cancellationToken);
                 var command = _connection.CreateCommand();
-
                 command.CommandText = sql;
-                return await command.ExecuteNonQueryAsync(cancellationToken);
+
+                if (parameters != null)
+                {
+                    command.Parameters.AddRange(parameters);
+                }
+
+                try
+                {
+                    return await command.ExecuteNonQueryAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
         }
 

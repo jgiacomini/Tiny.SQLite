@@ -4,9 +4,9 @@ namespace Tiny.SQLite.UnitTests
 {
     public abstract class BaseColumnTest : BaseDatabaseTests
     {
-        public TableColumn GetColumnByPropertyName(TableMapping mapping, string propertyName)
+        internal TableColumn GetColumnByPropertyName(TableMapping mapping, string propertyName)
         {
-            return mapping.Columns.FirstOrDefault(f => f.PropertyName == propertyName);
+            return mapping.Columns.FirstOrDefault(f => f.PropertyInfo.Name == propertyName);
         }
     }
 }

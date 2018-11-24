@@ -33,5 +33,25 @@ namespace Tiny.SQLite.UnitTests
                 Assert.IsFalse(await dbContext.Table<SmallTable>().ExistsAsync());
             }
         }
+
+        [TestMethod]
+        public async Task TestCountTableAsync()
+        {
+            using (DbContext dbContext = new DbContext(PathOfDb))
+            {
+                await dbContext.Table<SmallTable>().CreateAsync();
+                var table = dbContext.Table<SmallTable>();
+
+                var count = await table.CountAsync();
+                Assert.AreEqual(count, 0);
+                await table.InsertAsync(new SmallTable()
+                {
+                    Name = "TEST"
+                });
+
+                count = await dbContext.Table<SmallTable>().CountAsync();
+                Assert.AreEqual(count, 1);
+            }
+        }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tiny.SQLite.UnitTests
 {
@@ -32,7 +31,6 @@ namespace Tiny.SQLite.UnitTests
             public byte[] MyBytes { get; set; }
 
             public sbyte MysByte { get; set; }
-            public sbyte[] MysBytes { get; set; }
             public double MyDouble { get; set; }
             public float MyFloat { get; set; }
             public decimal MyDecimal { get; set; }
@@ -60,8 +58,6 @@ namespace Tiny.SQLite.UnitTests
             public byte[] MyBytes { get; set; }
             public sbyte? MysByte { get; set; }
 
-            // TODO : nullable
-            public sbyte[] MysBytes { get; set; }
             public double? MyDouble { get; set; }
             public float? MyFloat { get; set; }
             public decimal? MyDecimal { get; set; }
@@ -122,6 +118,49 @@ namespace Tiny.SQLite.UnitTests
         }
 
         [TestMethod]
+        public async Task InsertInTableWithSimpleTypes()
+        {
+            using (var context = new DbContext(PathOfDb))
+            {
+                try
+                {
+                    var table = context.Table<SimpleTableWithAllTypes>();
+                    await table.CreateAsync();
+
+                    await table.InsertAsync(new SimpleTableWithAllTypes()
+                    {
+                        Date = DateTime.Now,
+                        MyBoolean = true,
+                        MyByte = 1,
+                        MyBytes = new byte[1] { 1 },
+                        MyChar = 'c',
+                        MyDecimal = 1,
+                        MyDouble = 1,
+                        MyEnum = MyEnum.Val2,
+                        MyFloat = 1.2f,
+                        MyGuid = Guid.NewGuid(),
+                        MyInt = 2,
+                        MyLong = 42,
+                        MysByte = 1,
+                        MyShort = 1,
+                        MyStr = "MyString",
+                        MyuInt = 1,
+                        MyULong = 1,
+                        MyUShort = 1
+                    });
+
+                    var count = await table.CountAsync();
+
+                    Assert.IsTrue(count == 1);
+                }
+                catch (Exception ex)
+                {
+                    Assert.Fail(ex.Message);
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestSimpleTypesNullable()
         {
             TableMapper mapper = new TableMapper(false, true);
@@ -163,7 +202,6 @@ namespace Tiny.SQLite.UnitTests
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MyInt)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MyLong)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MysByte)));
-            Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MysBytes)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MyShort)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MyStr)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypes.MyuInt)));
@@ -186,7 +224,6 @@ namespace Tiny.SQLite.UnitTests
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MyInt)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MyLong)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MysByte)));
-            Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MysBytes)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MyShort)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MyStr)));
             Assert.IsTrue(mapping.Columns.Any(t => t.ColumnName == nameof(SimpleTableWithAllTypesNullable.MyuInt)));
@@ -198,7 +235,7 @@ namespace Tiny.SQLite.UnitTests
 
         private TableColumn GetColumnByPropertyName(TableMapping mapping, string propertyName)
         {
-            return mapping.Columns.First(f => f.PropertyName == propertyName);
+            return mapping.Columns.First(f => f.PropertyInfo.Name == propertyName);
         }
     }
 }
