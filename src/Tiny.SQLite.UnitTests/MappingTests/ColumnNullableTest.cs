@@ -6,11 +6,7 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnNullableTest : BaseColumnTest
     {
-        public ColumnNullableTest() : base(false)
-        {
-        }
-
-        class NullableColumnsTable
+        private class NullableColumnsTable
         {
             public string NullableString { get; set; }
 
@@ -22,27 +18,28 @@ namespace TinySQLite.Net.UnitTests
             public byte[] MyBytesNotNullable { get; set; }
         }
 
-        class NullableColumnsIntTable
+        private class NullableColumnsIntTable
         {
             public int Int { get; set; }
             public int? IntNullable { get; set; }
-  
         }
-
 
         [TestMethod]
         public void CollumnNullable_TestString()
         {
             TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<NullableColumnsTable>();
-            var column = GetColumnByPropertyName(mapping,
+            var column = GetColumnByPropertyName(
+                mapping,
                 nameof(NullableColumnsTable.NullableString));
 
-            Assert.IsTrue(column.IsNullable,
+            Assert.IsTrue(
+                column.IsNullable,
                 "string without attribute must be nullable");
 
             var columnNotNull = GetColumnByPropertyName(mapping, nameof(NullableColumnsTable.NotNullableString));
-            Assert.IsFalse(columnNotNull.IsNullable,
+            Assert.IsFalse(
+                columnNotNull.IsNullable,
                 "string with attribute not null must be not nullable");
         }
 
@@ -55,11 +52,9 @@ namespace TinySQLite.Net.UnitTests
 
             Assert.IsTrue(column.IsNullable);
 
-
             var columnNotNull = GetColumnByPropertyName(mapping, nameof(NullableColumnsTable.MyBytesNotNullable));
             Assert.IsFalse(columnNotNull.IsNullable);
         }
-
 
         [TestMethod]
         public void CollumnNullable_TestInt()

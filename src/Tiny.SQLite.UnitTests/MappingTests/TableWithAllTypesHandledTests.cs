@@ -9,10 +9,6 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class TableWithAllTypesHandledTests : BaseDatabaseTests
     {
-        public TableWithAllTypesHandledTests() : base(true)
-        {
-
-        }
         public class SimpleTableWithAllTypes
         {
             public Guid MyGuid { get; set; }
@@ -40,14 +36,14 @@ namespace TinySQLite.Net.UnitTests
             public double MyDouble { get; set; }
             public float MyFloat { get; set; }
             public decimal MyDecimal { get; set; }
-
         }
 
         public class SimpleTableWithAllTypesNullable
         {
             public Guid? MyGuid { get; set; }
             public MyEnum? MyEnum { get; set; }
-            //TODO : nullable
+
+            // TODO : nullable
             public string MyStr { get; set; }
             public char? MyChar { get; set; }
             public DateTime? Date { get; set; }
@@ -59,10 +55,12 @@ namespace TinySQLite.Net.UnitTests
             public long? MyLong { get; set; }
             public ulong? MyULong { get; set; }
             public byte? MyByte { get; set; }
-            //TODO : nullable
+
+            // TODO : nullable
             public byte[] MyBytes { get; set; }
             public sbyte? MysByte { get; set; }
-            //TODO : nullable
+
+            // TODO : nullable
             public sbyte[] MysBytes { get; set; }
             public double? MyDouble { get; set; }
             public float? MyFloat { get; set; }
@@ -75,7 +73,6 @@ namespace TinySQLite.Net.UnitTests
            Val2,
         }
 
-
         [TestMethod]
         public void TestSimpleTypes()
         {
@@ -85,7 +82,7 @@ namespace TinySQLite.Net.UnitTests
             CheckColumns(mapping);
             Assert.IsTrue(mapping.TableName == "SimpleTableWithAllTypes", "TableName KO");
             Assert.IsTrue(mapping.MappedType == typeof(SimpleTableWithAllTypes), "MappedType KO");
-          
+
             var dateColumn = GetColumnByPropertyName(mapping, nameof(SimpleTableWithAllTypes.Date));
             Assert.IsTrue(dateColumn.ColumnType == "DATETIME");
 
@@ -103,13 +100,12 @@ namespace TinySQLite.Net.UnitTests
 
             var myStrColumn = GetColumnByPropertyName(mapping, nameof(SimpleTableWithAllTypes.MyStr));
             Assert.IsTrue(myStrColumn.ColumnType == "VARCHAR");
-
         }
 
         [TestMethod]
         public async Task CreateTableWithSimpleTypes()
         {
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 try
                 {
@@ -117,7 +113,6 @@ namespace TinySQLite.Net.UnitTests
                     await table.CreateAsync();
 
                     Assert.IsTrue(await table.ExistsAsync());
-
                 }
                 catch (Exception ex)
                 {
@@ -125,8 +120,6 @@ namespace TinySQLite.Net.UnitTests
                 }
             }
         }
-
-
 
         [TestMethod]
         public void TestSimpleTypesNullable()
@@ -155,7 +148,6 @@ namespace TinySQLite.Net.UnitTests
 
             var myStrColumn = GetColumnByPropertyName(mapping, nameof(SimpleTableWithAllTypesNullable.MyStr));
             Assert.IsTrue(myStrColumn.ColumnType == "VARCHAR");
-
         }
 
         private void CheckColumns(TableMapping mapping)

@@ -2,7 +2,6 @@
 
 namespace TinySQLite
 {
-
     public class TableColumn
     {
         internal TableColumn()

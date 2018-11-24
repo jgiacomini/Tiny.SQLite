@@ -6,10 +6,9 @@ namespace TinySQLite.Exceptions
 {
     public class TableHaveMoreThanOneAutoIncrementedColumnException : Exception
     {
-        public TableHaveMoreThanOneAutoIncrementedColumnException(string tableName): 
-            base ($"table {tableName} has more than one auto incremented column")
+        public TableHaveMoreThanOneAutoIncrementedColumnException(string tableName)
+            : base($"table {tableName} has more than one auto incremented column")
         {
-
         }
     }
 }

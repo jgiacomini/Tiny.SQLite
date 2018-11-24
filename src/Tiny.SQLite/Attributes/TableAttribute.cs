@@ -2,7 +2,6 @@
 
 namespace TinySQLite.Attributes
 {
-
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class TableAttribute : Attribute
     {

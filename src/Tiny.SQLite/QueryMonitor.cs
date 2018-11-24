@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace TinySQLite
 {
-
     internal class QueryMonitor : IDisposable
     {
 #region Fields
@@ -21,11 +20,11 @@ namespace TinySQLite
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -33,8 +32,8 @@ namespace TinySQLite
                     _internalLogger.Log(_query, _stopwatch.Elapsed);
                     _internalLogger = null;
                 }
-                
-                disposedValue = true;
+
+                _disposedValue = true;
             }
         }
 
@@ -48,6 +47,7 @@ namespace TinySQLite
         public void Dispose()
         {
             Dispose(true);
+
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }

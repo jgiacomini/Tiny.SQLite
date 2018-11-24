@@ -9,11 +9,7 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnUniqueTest : BaseColumnTest
     {
-        public ColumnUniqueTest() : base(true)
-        {
-
-        }
-        class UniqueColumnsTable
+        private class UniqueColumnsTable
         {
             [Indexed("IX_UQ_UNIQUE", 0, IsUnique = true)]
             public string Unique { get; set; }
@@ -26,26 +22,30 @@ namespace TinySQLite.Net.UnitTests
         {
             TableMapper mapper = new TableMapper(true, true);
             var mapping = mapper.Map<UniqueColumnsTable>();
-            var column = GetColumnByPropertyName(mapping,
+            var column = GetColumnByPropertyName(
+                mapping,
                 nameof(UniqueColumnsTable.Unique));
             var index = mapping.Indexes.FirstOrDefault(i => i.Columns.Contains(column));
 
-            Assert.IsNotNull(index,
+            Assert.IsNotNull(
+                index,
                 $"column {nameof(UniqueColumnsTable.Unique)} must have index");
-            Assert.IsTrue(index.IsUnique,
+            Assert.IsTrue(
+                index.IsUnique,
                 $"column {nameof(UniqueColumnsTable.Unique)} must have unique index");
 
             var columnNotUnique = GetColumnByPropertyName(mapping, nameof(UniqueColumnsTable.NotUnique));
             var noIndex = mapping.Indexes.FirstOrDefault(i => i.Columns.Contains(columnNotUnique));
 
-            Assert.IsNull(noIndex,
+            Assert.IsNull(
+                noIndex,
                 "column without attribute Unique must be not unique");
         }
 
         [TestMethod]
         public async Task CreateTableWithUniqueColumnTypes()
         {
-            var context = new DbContext(_pathOfDb);
+            var context = new DbContext(PathOfDb);
 
             try
             {

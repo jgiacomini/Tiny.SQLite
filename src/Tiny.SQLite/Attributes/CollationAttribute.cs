@@ -3,9 +3,9 @@
 namespace TinySQLite.Attributes
 {
     /// <summary>
-    /// Every column of every table has an associated collating function. 
-    /// If no collating function is explicitly defined, then the collating function defaults to BINARY. 
-    /// The Collate clause of the column definition is used to define alternative collating functions for a column. 
+    /// Every column of every table has an associated collating function.
+    /// If no collating function is explicitly defined, then the collating function defaults to BINARY.
+    /// The Collate clause of the column definition is used to define alternative collating functions for a column.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple =false)]
     public class CollationAttribute : Attribute
@@ -37,6 +37,7 @@ namespace TinySQLite.Attributes
         /// The same as binary, except the 26 upper case characters of ASCII are folded to their lower case equivalents before the comparison is performed. Note that only ASCII characters are case folded. SQLite does not attempt to do full UTF case folding due to the size of the tables required.
         /// </summary>
         RTrim = 1,
+
         /// <summary>
         /// The same as binary, except that trailing space characters are ignored.
         /// </summary>

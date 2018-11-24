@@ -6,10 +6,6 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnMaxLenghtTest : BaseColumnTest
     {
-        public ColumnMaxLenghtTest() : base(false)
-        {
-        }
-
         public class MaxLenghtTable
         {
             [MaxLength(255)]
@@ -25,6 +21,5 @@ namespace TinySQLite.Net.UnitTests
 
             Assert.IsTrue(column.ColumnType == "VARCHAR(255)", $"Expected :VARCHAR(255), current : {column.ColumnType} ");
         }
-
     }
 }

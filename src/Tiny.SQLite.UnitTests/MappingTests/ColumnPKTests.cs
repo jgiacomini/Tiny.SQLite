@@ -7,10 +7,6 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnPKTests : BaseColumnTest
     {
-        public ColumnPKTests() : base(true)
-        {
-        }
-
         public class PrimaryTable
         {
             [PrimaryKey]
@@ -32,7 +28,6 @@ namespace TinySQLite.Net.UnitTests
             public string PrimaryString1 { get; set; }
         }
 
-
         [TestMethod]
         public void PK_OneColumn()
         {
@@ -47,7 +42,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task PK_2ColumnsPrimayKey()
         {
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 var table = context.Table<DoublePrimaryKey>();
                 await table.CreateAsync();
@@ -57,12 +52,11 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task PK_CreateTable()
         {
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 var table = context.Table<PrimaryTable>();
                 await table.CreateAsync();
             }
         }
-
     }
 }

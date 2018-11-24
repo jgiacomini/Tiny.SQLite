@@ -6,10 +6,6 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnIgnoreTests : BaseColumnTest
     {
-        public ColumnIgnoreTests() : base(false)
-        {
-        }
-
         public class IgnoredColumnTable
         {
             [Column("CUSTOM")]
@@ -40,10 +36,9 @@ namespace TinySQLite.Net.UnitTests
             public static int PrivateSetter { get; private set; }
             public static int PrivateGetter { private get; set; }
 
-            public static int NoGetter { set { }  }
+            public static int NoGetter { set { } }
 
             public static int NoSetter { get { return 42; } }
-
         }
 
         [TestMethod]

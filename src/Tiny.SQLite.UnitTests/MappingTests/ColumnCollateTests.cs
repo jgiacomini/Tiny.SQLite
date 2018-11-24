@@ -9,10 +9,6 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnCollateTests : BaseColumnTest
     {
-        public ColumnCollateTests() : base(true)
-        {
-        }
-
         public class CollateColumnTable
         {
             [Collation(Collate.Binary)]
@@ -23,9 +19,7 @@ namespace TinySQLite.Net.UnitTests
 
             [Collation(Collate.RTrim)]
             public string RTRIM { get; set; }
-
         }
-
 
         [TestMethod]
         public void TestCollationColumn()
@@ -45,7 +39,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithCollation()
         {
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 try
                 {
@@ -53,7 +47,6 @@ namespace TinySQLite.Net.UnitTests
                     await table.CreateAsync();
 
                     Assert.IsTrue(await table.ExistsAsync());
-
                 }
                 catch (Exception ex)
                 {

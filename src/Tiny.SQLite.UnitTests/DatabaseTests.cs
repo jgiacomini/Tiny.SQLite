@@ -8,14 +8,10 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class DatabaseTests : BaseDatabaseTests
     {
-        public DatabaseTests() : base(true)
-        {
-        }
-        
         [TestMethod]
         public async Task TestVacuumAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, false))
+            using (DbContext dbContext = new DbContext(PathOfDb, false))
             {
                 await dbContext.Database.VacuumAsync();
             }
@@ -24,9 +20,8 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task GetVersionOfSQLiteDatabaseAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, false))
+            using (DbContext dbContext = new DbContext(PathOfDb, false))
             {
-
                 var version = await dbContext.Database.GetSQLiteVersionAsync();
 
                 System.Diagnostics.Debug.WriteLine(version);
@@ -39,7 +34,7 @@ namespace TinySQLite.Net.UnitTests
         public async Task GetUserVersionAsync()
         {
             const long currentUserVersion = 7L;
-            using (DbContext dbContext = new DbContext(_pathOfDb, false))
+            using (DbContext dbContext = new DbContext(PathOfDb, false))
             {
                 dbContext.Database.Log = WriteLine;
                 await dbContext.Database.SetUserVersionAsync(currentUserVersion);
@@ -52,7 +47,7 @@ namespace TinySQLite.Net.UnitTests
             }
         }
 
-        void WriteLine(string line)
+        private void WriteLine(string line)
         {
             Debug.WriteLine(line);
         }
@@ -60,7 +55,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task TestWALAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, false))
+            using (DbContext dbContext = new DbContext(PathOfDb, false))
             {
                 await dbContext.Database.EnableWALAsync();
                 await dbContext.Database.DisableWALAsync();

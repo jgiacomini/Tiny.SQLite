@@ -8,13 +8,9 @@ namespace TinySQLite.Net.UnitTests
     [TestClass]
     public class ColumnAutoIncrementTests : BaseColumnTest
     {
-        public ColumnAutoIncrementTests() : base(true)
-        {
-        }
-
         public class AutoIncrement
         {
-            [PrimaryKey(AutoIncrement =  true)]
+            [PrimaryKey(AutoIncrement = true)]
             public int AutoInc { get; set; }
         }
 
@@ -32,7 +28,6 @@ namespace TinySQLite.Net.UnitTests
             [PrimaryKey(AutoIncrement = true)]
             public string AutoInc { get; set; }
         }
-
 
         [TestMethod]
         public void TestAutoColumn()
@@ -53,13 +48,13 @@ namespace TinySQLite.Net.UnitTests
             TableMapper mapper = new TableMapper(true, true);
             try
             {
-
                 var mapping = mapper.Map<AutoIncrementWith2Column>();
             }
             catch (TableHaveMoreThanOneAutoIncrementedColumnException)
             {
                 exceptionThrown = true;
             }
+
             if (exceptionThrown == false)
             {
                 Assert.Fail("The creation of this table must throw TableHaveMoreThanOnePrimaryKeyException");
@@ -69,7 +64,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTable()
         {
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 var table = context.Table<AutoIncrement>();
                 await table.CreateAsync();
@@ -80,7 +75,7 @@ namespace TinySQLite.Net.UnitTests
         public async Task AutoIncOnGuidColumn()
         {
             bool exceptionThrown = false;
-            using (var context = new DbContext(_pathOfDb))
+            using (var context = new DbContext(PathOfDb))
             {
                 try
                 {

@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiny.SQLite", "Tiny.SQLite\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiny.SQLite.UnitTests", "Tiny.SQLite.UnitTests\Tiny.SQLite.UnitTests.csproj", "{05063330-B7F6-41A1-95BB-04FDA9CF1718}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Common", ".Common", "{A09DED71-74DE-4EAD-B597-EE7C43B1F873}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		ruleset.ruleset = ruleset.ruleset
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

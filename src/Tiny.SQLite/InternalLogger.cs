@@ -6,7 +6,7 @@ namespace TinySQLite
 {
     internal class InternalLogger : IDisposable
     {
-        public Action<string> OnLog;
+        public Action<string> OnLog { get; set; }
 
         public void Dispose()
         {

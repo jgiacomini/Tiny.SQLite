@@ -1,7 +1,6 @@
 ﻿using System;
 namespace TinySQLite
 {
-
     public class TableMapping
     {
         internal TableMapping()
@@ -13,5 +12,4 @@ namespace TinySQLite
         public TableColumn[] Columns { get; internal set; }
         public TableIndex[] Indexes { get; internal set; }
     }
-
 }

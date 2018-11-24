@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
@@ -27,40 +28,40 @@ namespace TinySQLite
             }
         }
 
-        public async Task OpenConnectionAsync()
+        public async Task OpenConnectionAsync(CancellationToken cancellationToken)
         {
             if (_connection.State == ConnectionState.Closed)
             {
-                await _connection.OpenAsync();
+                await _connection.OpenAsync(cancellationToken);
             }
         }
 
-        public async Task ExecuteNonQueryAsync(string sql)
+        public async Task ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
         {
             using (var monitor = new QueryMonitor(sql, _internalLogger))
             {
-                await OpenConnectionAsync();
+                await OpenConnectionAsync(cancellationToken);
                 var command = _connection.CreateCommand();
 
                 command.CommandText = sql;
-                await command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(cancellationToken);
             }
         }
 
-        public async Task<object> ExecuteScalarAsync(string sql)
+        public async Task<object> ExecuteScalarAsync(string sql, CancellationToken cancellationToken)
         {
             using (var monitor = new QueryMonitor(sql, _internalLogger))
             {
-                await OpenConnectionAsync();
+                await OpenConnectionAsync(cancellationToken);
                 var command = _connection.CreateCommand();
 
                 command.CommandText = sql;
-                return await command.ExecuteScalarAsync();
+                return await command.ExecuteScalarAsync(cancellationToken);
             }
         }
 
         #region IDisposable Support
-     
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -71,6 +72,7 @@ namespace TinySQLite
                     {
                         _connection.Close();
                     }
+
                     _connection.Dispose();
                     _connection = null;
                     _internalLogger?.Dispose();

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using TinySQLite.Attributes;
-using System.Linq;
-using TinySQLite.Exceptions;
-using System.Text;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using TinySQLite.Attributes;
+using TinySQLite.Exceptions;
 
 namespace TinySQLite
 {
@@ -20,7 +20,8 @@ namespace TinySQLite
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
         }
 
-        public TableMapping Map<T>() where T : class, new()
+        public TableMapping Map<T>()
+            where T : class, new()
         {
             return Map(typeof(T));
         }
@@ -51,7 +52,7 @@ namespace TinySQLite
             foreach (var property in properties)
             {
                 string columnType = null;
-                
+
                 var attributes = property.GetCustomAttributes();
 
                 if (TryToGetColumnType(property, attributes, out columnType))
@@ -115,7 +116,7 @@ namespace TinySQLite
                         var tableIndex = new TableIndex();
                         tableIndex.IsUnique = attribute.IsUnique;
                         tableIndex.Name = attribute.Name;
-                        dictionary.Add(tableIndex, new List<Tuple<TableColumn, int>>() { new Tuple<TableColumn, int>(column.Key, attribute.Order) } );
+                        dictionary.Add(tableIndex, new List<Tuple<TableColumn, int>>() { new Tuple<TableColumn, int>(column.Key, attribute.Order) });
                     }
                 }
             }
@@ -123,7 +124,7 @@ namespace TinySQLite
             var indexes = new List<TableIndex>();
             foreach (var index in dictionary)
             {
-                index.Key.Columns = index.Value.OrderBy(v => v.Item2).Select( v=>v.Item1).ToArray();
+                index.Key.Columns = index.Value.OrderBy(v => v.Item2).Select(v => v.Item1).ToArray();
                 indexes.Add(index.Key);
             }
 
@@ -215,18 +216,18 @@ namespace TinySQLite
         private Collate GetColumnCollating(PropertyInfo info, IEnumerable<Attribute> attributes)
         {
             var attribute = attributes.OfType<CollationAttribute>().FirstOrDefault();
-            
+
             if (attribute != null)
             {
                 return attribute.Collation;
             }
+
             return Collate.Binary;
         }
 
         private bool TryToGetColumnType(PropertyInfo info, IEnumerable<Attribute> attributes, out string columnType)
         {
             columnType = null;
-
 
             if (!info.CanRead || !info.CanWrite)
             {
@@ -237,6 +238,7 @@ namespace TinySQLite
             {
                 return false;
             }
+
             if (info.SetMethod.IsStatic)
             {
                 return false;
@@ -247,7 +249,6 @@ namespace TinySQLite
                 return false;
             }
 
-
             if (info.PropertyType == typeof(int) ||
                 info.PropertyType == typeof(uint) ||
                 info.PropertyType == typeof(int?) ||
@@ -256,6 +257,7 @@ namespace TinySQLite
                 columnType = "INTEGER";
                 return true;
             }
+
             if (info.PropertyType == typeof(string))
             {
                 var maxLengthAttr = info.GetCustomAttribute<MaxLengthAttribute>();
@@ -269,12 +271,14 @@ namespace TinySQLite
                 columnType = "VARCHAR";
                 return true;
             }
+
             if (info.PropertyType == typeof(bool) ||
                  info.PropertyType == typeof(bool?))
             {
                 columnType = "BOOLEAN";
                 return true;
             }
+
             if (info.PropertyType == typeof(DateTime) ||
                  info.PropertyType == typeof(DateTime?))
             {
@@ -289,18 +293,19 @@ namespace TinySQLite
 
                 return true;
             }
+
             if (IsNullableEnum(info.PropertyType) || info.PropertyType.GetTypeInfo().IsEnum)
             {
                 columnType = "INTEGER";
                 return true;
             }
+
             if (info.PropertyType == typeof(Guid) ||
                  info.PropertyType == typeof(Guid?))
             {
                 columnType = "CHAR(36)";
                 return true;
             }
-
 
             if (info.PropertyType == typeof(byte) ||
                 info.PropertyType == typeof(sbyte) ||
@@ -310,18 +315,21 @@ namespace TinySQLite
                 columnType = "SMALLINT";
                 return true;
             }
+
             if (info.PropertyType == typeof(byte[]) ||
                 info.PropertyType == typeof(sbyte[]))
             {
                 columnType = "BLOB";
                 return true;
             }
+
             if (info.PropertyType == typeof(char) ||
                 info.PropertyType == typeof(char?))
             {
                 columnType = "CHARACTER";
                 return true;
             }
+
             if (info.PropertyType == typeof(short) ||
                 info.PropertyType == typeof(ushort) ||
                 info.PropertyType == typeof(short?) ||
@@ -330,6 +338,7 @@ namespace TinySQLite
                 columnType = "MEDIUMINT";
                 return true;
             }
+
             if (info.PropertyType == typeof(long) ||
                 info.PropertyType == typeof(ulong) ||
                 info.PropertyType == typeof(long?) ||
@@ -362,6 +371,7 @@ namespace TinySQLite
 
             throw new TypeNotSupportedException(info.PropertyType);
         }
+
         private bool IsNullableEnum(Type t)
         {
             Type u = Nullable.GetUnderlyingType(t);

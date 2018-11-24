@@ -1,18 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TinySQLite.Attributes;
 using TinySQLite.Exceptions;
-using System.Linq;
 
 namespace TinySQLite.Net.UnitTests
 {
     [TestClass]
     public class ColumnIndexesTests : BaseColumnTest
     {
-        public ColumnIndexesTests() : base(true)
-        {
-        }
-
         public class IndexTable
         {
             [Indexed("IX_INDEX", 0)]
@@ -43,7 +39,6 @@ namespace TinySQLite.Net.UnitTests
             public int Index1 { get; set; }
         }
 
-
         public class IndexOnMultiColumnsButWithNotDifferentUniqueValue
         {
             [Indexed("IX_INDEX", 1, IsUnique = true)]
@@ -51,8 +46,6 @@ namespace TinySQLite.Net.UnitTests
             [Indexed("IX_INDEX", 0, IsUnique = false)]
             public int Index1 { get; set; }
         }
-
-
 
         [TestMethod]
         public void TestSimpleIndexColumn()
@@ -68,11 +61,10 @@ namespace TinySQLite.Net.UnitTests
             Assert.IsFalse(index.IsUnique, $"Column '{nameof(IndexTable.Index)}'  must be no unique");
         }
 
-
         [TestMethod]
         public async Task CreateTableWithSimpleIndex()
         {
-            var context = new DbContext(_pathOfDb);
+            var context = new DbContext(PathOfDb);
             var table = context.Table<IndexTable>();
             await table.CreateAsync();
         }
@@ -91,7 +83,7 @@ namespace TinySQLite.Net.UnitTests
             Assert.IsNotNull(index, $"Column '{nameof(IndexOnMultiColumns.Index1)}' must have an index");
             Assert.IsFalse(index.IsUnique, $"Column '{nameof(IndexOnMultiColumns.Index2)}' must be not unique");
 
-            var context = new DbContext(_pathOfDb);
+            var context = new DbContext(PathOfDb);
             var table = context.Table<IndexOnMultiColumns>();
             await table.CreateAsync();
         }
@@ -103,7 +95,7 @@ namespace TinySQLite.Net.UnitTests
 
             try
             {
-                var context = new DbContext(_pathOfDb);
+                var context = new DbContext(PathOfDb);
 
                 var table = context.Table<IndexOnMultiColumnsButWithNotDifferentUniqueValue>();
                 await table.CreateAsync();

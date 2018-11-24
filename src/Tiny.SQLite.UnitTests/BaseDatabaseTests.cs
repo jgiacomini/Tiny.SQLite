@@ -6,45 +6,39 @@ namespace TinySQLite.Net.UnitTests
 {
     public abstract class BaseDatabaseTests
     {
-        protected string _pathOfDb;
-        private readonly bool _autoCreateDatabase;
-        
-        public BaseDatabaseTests(bool autoCreateDatabase)
-        {
-            _autoCreateDatabase = autoCreateDatabase;
-        }
-
         public TestContext TestContext { get; set; }
+        protected string PathOfDb { get; set; }
 
         [TestInitialize]
         public void TestInitialize()
         {
-            if (string.IsNullOrEmpty(_pathOfDb))
+            if (string.IsNullOrEmpty(PathOfDb))
             {
                 var directoryPath = Path.Combine(Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "Tiny.Sqlite"));
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
-                _pathOfDb = Path.Combine(directoryPath, $"{TestContext.TestName}.db");
+
+                PathOfDb = Path.Combine(directoryPath, $"{TestContext.TestName}.db");
             }
 
-            if (File.Exists(_pathOfDb))
+            if (File.Exists(PathOfDb))
             {
-                File.Delete(_pathOfDb);
+                File.Delete(PathOfDb);
             }
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            ////if (string.IsNullOrEmpty(_pathOfDb))
-            ////{
-            ////    if (File.Exists(_pathOfDb))
-            ////    {
-            ////        File.Delete(_pathOfDb);
-            ////    }
-            ////}
+            if (string.IsNullOrEmpty(PathOfDb))
+            {
+                if (File.Exists(PathOfDb))
+                {
+                    File.Delete(PathOfDb);
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TinySQLite.Attributes;
 
@@ -17,7 +18,7 @@ namespace TinySQLite
             _queriesManager = queriesManager;
         }
 
-        public Task CreateAsync()
+        public Task CreateAsync(CancellationToken cancellationToken = default)
         {
             var queryBuilder = new StringBuilder($"CREATE TABLE IF NOT EXISTS {_mapping.TableName.EscapeTableName()}(\n");
 
@@ -37,11 +38,12 @@ namespace TinySQLite
                         primaryKeysAlreadyCreated = true;
                     }
                 }
-                
+
                 if (!column.IsNullable)
                 {
                     queryBuilder.Append("NOT NULL ");
                 }
+
                 if (column.Collate != Collate.Binary)
                 {
                     queryBuilder.Append($"COLLATE {GetCollate(column.Collate)} ");
@@ -49,9 +51,8 @@ namespace TinySQLite
 
                 if (column == lastColumn)
                 {
-                    // Add primary keys 
+                    // Add primary keys
                     // PRIMARY KEY(column_1, column_2,...)
-
                     if (!primaryKeysAlreadyCreated && hasPrimaryKey)
                     {
                         var columnsNames = string.Join(",", _mapping.Columns.Where(c => c.IsPrimaryKey).Select(p => p.ColumnName.EscapeColumnName()));
@@ -67,8 +68,8 @@ namespace TinySQLite
                 }
 
                 queryBuilder.AppendLine();
-
             }
+
             queryBuilder.AppendLine();
 
             foreach (var index in _mapping.Indexes)
@@ -85,8 +86,7 @@ namespace TinySQLite
                 }
             }
 
-
-            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString());
+            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), cancellationToken);
         }
 
         private string GetCollate(Collate collate)
@@ -103,17 +103,17 @@ namespace TinySQLite
                     throw new NotImplementedException();
             }
         }
-        
-        public async Task<bool> ExistsAsync()
+
+        public async Task<bool> ExistsAsync(CancellationToken cancellationToken = default)
         {
-            var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'");
+            var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'", cancellationToken);
             return Convert.ToBoolean(result);
         }
 
-        public Task DropAsync()
+        public Task DropAsync(CancellationToken cancellationToken = default)
         {
             var query = $"DROP TABLE IF EXISTS \"{_mapping.TableName.EscapeTableName()}\";";
-            return _queriesManager.ExecuteNonQueryAsync(query);
+            return _queriesManager.ExecuteNonQueryAsync(query, cancellationToken);
         }
     }
 }

@@ -4,10 +4,8 @@ using Microsoft.Data.Sqlite;
 
 namespace TinySQLite
 {
-
     public class DbContext : IDisposable
     {
-
         #region Fields
         private readonly Dictionary<Type, TableMapping> _mappings = new Dictionary<Type, TableMapping>();
         private readonly QueriesManager _queriesManager;
@@ -21,7 +19,6 @@ namespace TinySQLite
         /// <param name="filePath">file path of the database</param>
         /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
         /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
-
         public DbContext(
             string filePath,
             bool removeDiacriticsOnTableNameAndColumnName = true,
@@ -41,11 +38,11 @@ namespace TinySQLite
         }
 
         private DbContext(
-            bool removeDiacriticsOnTableNameAndColumnName, 
+            bool removeDiacriticsOnTableNameAndColumnName,
             bool storeDateTimeAsTicks)
         {
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
-           
+
             var connection = new SqliteConnection("Data Source=:memory:,version=3;");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             _queriesManager = new QueriesManager(connection);
@@ -69,7 +66,8 @@ namespace TinySQLite
 
         public Database Database { get; private set; }
 
-        public TableQuery<T> Table<T>() where T : new()
+        public TableQuery<T> Table<T>()
+            where T : new()
         {
             var type = typeof(T);
             TableMapping mapping = null;
@@ -102,7 +100,6 @@ namespace TinySQLite
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-
                 _disposedValue = true;
             }
         }
