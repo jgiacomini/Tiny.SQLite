@@ -61,5 +61,20 @@ namespace TinySQLite.Net.UnitTests
                 await dbContext.Database.DisableWALAsync();
             }
         }
+
+        [TestMethod]
+        public async Task TestBusyTimeoutAsync()
+        {
+            using (DbContext dbContext = new DbContext(PathOfDb, false))
+            {
+                var timeout = await dbContext.Database.GetBusyTimeoutAsync();
+
+                Assert.AreEqual(timeout, TimeSpan.FromSeconds(0));
+                var specifiedTimeout = TimeSpan.FromSeconds(10);
+                await dbContext.Database.SetBusyTimeoutAsync(specifiedTimeout);
+                timeout = await dbContext.Database.GetBusyTimeoutAsync();
+                Assert.AreEqual(timeout, specifiedTimeout);
+            }
+        }
     }
 }
