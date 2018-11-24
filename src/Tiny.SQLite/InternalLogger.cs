@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TinySQLite
 {
-    internal class InternalLogger : IDisposable
+    internal sealed class InternalLogger : IDisposable
     {
         public Action<string> OnLog { get; set; }
 

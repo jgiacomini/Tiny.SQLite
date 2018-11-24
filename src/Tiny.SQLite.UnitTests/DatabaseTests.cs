@@ -68,12 +68,21 @@ namespace TinySQLite.Net.UnitTests
             using (DbContext dbContext = new DbContext(PathOfDb, false))
             {
                 var timeout = await dbContext.Database.GetBusyTimeoutAsync();
-
                 Assert.AreEqual(timeout, TimeSpan.FromSeconds(0));
                 var specifiedTimeout = TimeSpan.FromSeconds(10);
                 await dbContext.Database.SetBusyTimeoutAsync(specifiedTimeout);
                 timeout = await dbContext.Database.GetBusyTimeoutAsync();
                 Assert.AreEqual(timeout, specifiedTimeout);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestInMemoryAsync()
+        {
+            using (DbContext dbContext = DbContext.InMemory())
+            {
+                var version = await dbContext.Database.GetSQLiteVersionAsync();
+                Assert.IsNotNull(version);
             }
         }
     }

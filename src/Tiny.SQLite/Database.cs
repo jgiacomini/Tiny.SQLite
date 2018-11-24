@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace TinySQLite
 {
-    public class Database : IDisposable
+    public sealed class Database
     {
         #region Fields
         private readonly QueriesManager _queriesManager;
@@ -119,11 +119,6 @@ namespace TinySQLite
         public async Task SetBusyTimeoutAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
         {
             await _queriesManager.ExecuteScalarAsync($"PRAGMA busy_timeout = {timeSpan.TotalMilliseconds};", cancellationToken);
-        }
-
-        public void Dispose()
-        {
-            Log = null;
         }
     }
 }

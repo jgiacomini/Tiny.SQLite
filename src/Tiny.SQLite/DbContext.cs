@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 
 namespace TinySQLite
 {
-    public class DbContext : IDisposable
+    public sealed class DbContext : IDisposable
     {
         #region Fields
         private readonly Dictionary<Type, TableMapping> _mappings = new Dictionary<Type, TableMapping>();
@@ -43,7 +43,7 @@ namespace TinySQLite
         {
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
 
-            var connection = new SqliteConnection("Data Source=:memory:,version=3;");
+            var connection = new SqliteConnection("Data Source=:memory:;Mode=Memory");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, null);
@@ -57,6 +57,7 @@ namespace TinySQLite
         /// </param>
         /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
         /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
+        /// <returns>returns in memory DbContext</returns>
         public static DbContext InMemory(
             bool removeDiacriticsOnTableNameAndColumnName = true,
             bool storeDateTimeAsTicks = false)
@@ -88,13 +89,12 @@ namespace TinySQLite
         #region IDisposable Support
         private bool _disposedValue = false;
 
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    Database.Dispose();
                     _queriesManager.Dispose();
                 }
 

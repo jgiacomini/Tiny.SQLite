@@ -62,7 +62,7 @@ namespace TinySQLite
 
         #region IDisposable Support
 
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {

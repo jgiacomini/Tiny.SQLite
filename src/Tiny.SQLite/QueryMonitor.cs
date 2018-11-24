@@ -3,13 +3,13 @@ using System.Diagnostics;
 
 namespace TinySQLite
 {
-    internal class QueryMonitor : IDisposable
+    internal sealed class QueryMonitor : IDisposable
     {
-#region Fields
+        #region Fields
         private readonly string _query;
         private readonly Stopwatch _stopwatch;
         private InternalLogger _internalLogger;
-#endregion
+        #endregion
 
         public QueryMonitor(string query, InternalLogger internalLogger)
         {
@@ -22,7 +22,7 @@ namespace TinySQLite
         #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {
