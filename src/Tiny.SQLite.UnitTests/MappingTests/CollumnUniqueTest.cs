@@ -58,7 +58,5 @@ namespace TinySQLite.Net.UnitTests
                 Assert.Fail(ex.Message);
             }
         }
-
-
     }
 }

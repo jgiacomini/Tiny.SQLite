@@ -47,17 +47,21 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task PK_2ColumnsPrimayKey()
         {
-            var context = new DbContext(_pathOfDb);
-            var table = context.Table<DoublePrimaryKey>();
-            await table.CreateAsync();
+            using (var context = new DbContext(_pathOfDb))
+            {
+                var table = context.Table<DoublePrimaryKey>();
+                await table.CreateAsync();
+            }
         }
 
         [TestMethod]
         public async Task PK_CreateTable()
         {
-            var context = new DbContext(_pathOfDb);
-            var table = context.Table<PrimaryTable>();
-            await table.CreateAsync();
+            using (var context = new DbContext(_pathOfDb))
+            {
+                var table = context.Table<PrimaryTable>();
+                await table.CreateAsync();
+            }
         }
 
     }

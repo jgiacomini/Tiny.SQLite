@@ -15,36 +15,41 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task TestVacuumAsync()
         {
-            DbContext dbContext = new DbContext(_pathOfDb, 0, false);
-            await dbContext.Database.VacuumAsync();
+            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            {
+                await dbContext.Database.VacuumAsync();
+            }
         }
 
         [TestMethod]
         public async Task GetVersionOfSQLiteDatabaseAsync()
         {
-            DbContext dbContext = new DbContext(_pathOfDb, 0, false);
+            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            {
 
-            var version = await dbContext.Database.GetSQLiteVersionAsync();
+                var version = await dbContext.Database.GetSQLiteVersionAsync();
 
-            System.Diagnostics.Debug.WriteLine(version);
+                System.Diagnostics.Debug.WriteLine(version);
 
-            Assert.IsNotNull(version);
+                Assert.IsNotNull(version);
+            }
         }
 
         [TestMethod]
         public async Task GetUserVersionAsync()
         {
             const long currentUserVersion = 7L;
-            DbContext dbContext = new DbContext(_pathOfDb, 0, false);
+            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            {
+                dbContext.Database.Log = WriteLine;
+                await dbContext.Database.SetUserVersionAsync(currentUserVersion);
 
-            dbContext.Database.Log = WriteLine;
-            await dbContext.Database.SetUserVersionAsync(currentUserVersion);
+                var version = await dbContext.Database.GetUserVersionAsync();
 
-            var version = await dbContext.Database.GetUserVersionAsync();
+                System.Diagnostics.Debug.WriteLine(version);
 
-            System.Diagnostics.Debug.WriteLine(version);
-
-            Assert.IsTrue(version == currentUserVersion);
+                Assert.IsTrue(version == currentUserVersion);
+            }
         }
 
         void WriteLine(string line)
@@ -55,10 +60,11 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task TestWALAsync()
         {
-            DbContext dbContext = new DbContext(_pathOfDb, 0, false);
-
-            await dbContext.Database.EnableWALAsync();
-            await dbContext.Database.DisableWALAsync();
+            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            {
+                await dbContext.Database.EnableWALAsync();
+                await dbContext.Database.DisableWALAsync();
+            }
         }
     }
 }

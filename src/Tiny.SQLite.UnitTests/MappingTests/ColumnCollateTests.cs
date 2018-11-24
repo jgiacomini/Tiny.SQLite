@@ -45,21 +45,21 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task CreateTableWithCollation()
         {
-            var context = new DbContext(_pathOfDb);
-
-            try
+            using (var context = new DbContext(_pathOfDb))
             {
-                var table = context.Table<CollateColumnTable>();
-                await table.CreateAsync();
+                try
+                {
+                    var table = context.Table<CollateColumnTable>();
+                    await table.CreateAsync();
 
-                Assert.IsTrue(await table.ExistsAsync());
+                    Assert.IsTrue(await table.ExistsAsync());
 
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Assert.Fail(ex.Message);
+                }
             }
         }
-
     }
 }
