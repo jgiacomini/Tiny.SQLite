@@ -15,7 +15,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task TestVacuumAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            using (DbContext dbContext = new DbContext(_pathOfDb, false))
             {
                 await dbContext.Database.VacuumAsync();
             }
@@ -24,7 +24,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task GetVersionOfSQLiteDatabaseAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            using (DbContext dbContext = new DbContext(_pathOfDb, false))
             {
 
                 var version = await dbContext.Database.GetSQLiteVersionAsync();
@@ -39,7 +39,7 @@ namespace TinySQLite.Net.UnitTests
         public async Task GetUserVersionAsync()
         {
             const long currentUserVersion = 7L;
-            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            using (DbContext dbContext = new DbContext(_pathOfDb, false))
             {
                 dbContext.Database.Log = WriteLine;
                 await dbContext.Database.SetUserVersionAsync(currentUserVersion);
@@ -60,7 +60,7 @@ namespace TinySQLite.Net.UnitTests
         [TestMethod]
         public async Task TestWALAsync()
         {
-            using (DbContext dbContext = new DbContext(_pathOfDb, 0, false))
+            using (DbContext dbContext = new DbContext(_pathOfDb, false))
             {
                 await dbContext.Database.EnableWALAsync();
                 await dbContext.Database.DisableWALAsync();

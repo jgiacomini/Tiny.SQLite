@@ -8,7 +8,7 @@ namespace TinySQLite
     public class DbContext : IDisposable
     {
 
-#region Fields
+        #region Fields
         private readonly Dictionary<Type, TableMapping> _mappings = new Dictionary<Type, TableMapping>();
         private readonly QueriesManager _queriesManager;
         private readonly bool _storeDateTimeAsTicks;
@@ -19,15 +19,11 @@ namespace TinySQLite
         /// Create a Database context
         /// </summary>
         /// <param name="filePath">file path of the database</param>
-        /// <param name="busyTimeout">A timeout, in milliseconds, to wait when the database is locked before throwing a SqliteBusyException
-        /// The default value is 0, which means to throw a SqliteBusyException immediately if the database is locked.
-        /// </param>
         /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
         /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
 
         public DbContext(
             string filePath,
-            int busyTimeout = 0,
             bool removeDiacriticsOnTableNameAndColumnName = true,
             bool storeDateTimeAsTicks = false)
         {
@@ -38,20 +34,19 @@ namespace TinySQLite
 
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
-            var connection = new SqliteConnection($"Data Source={filePath},busy_timeout={busyTimeout};Mode=ReadWriteCreate");
+            var connection = new SqliteConnection($"Data Source={filePath};Mode=ReadWriteCreate");
 
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, filePath);
         }
 
         private DbContext(
-            int busyTimeout,
             bool removeDiacriticsOnTableNameAndColumnName, 
             bool storeDateTimeAsTicks)
         {
             _removeDiacriticsOnTableNameAndColumnName = removeDiacriticsOnTableNameAndColumnName;
            
-            var connection = new SqliteConnection("Data Source=file::memory:,version=3;");
+            var connection = new SqliteConnection("Data Source=:memory:,version=3;");
             _storeDateTimeAsTicks = storeDateTimeAsTicks;
             _queriesManager = new QueriesManager(connection);
             Database = new Database(_queriesManager, null);
@@ -66,11 +61,10 @@ namespace TinySQLite
         /// <param name="removeDiacriticsOnTableNameAndColumnName">if true the tableName and column name are generated without diacritics ex : 'crèmeBrûlée' would become 'cremeBrulee'</param>
         /// <param name="storeDateTimeAsTicks">if true store dateTime as ticks(long)</param>
         public static DbContext InMemory(
-            int busyTimeout = 0,
             bool removeDiacriticsOnTableNameAndColumnName = true,
             bool storeDateTimeAsTicks = false)
         {
-            return new DbContext(busyTimeout, removeDiacriticsOnTableNameAndColumnName, storeDateTimeAsTicks);
+            return new DbContext(removeDiacriticsOnTableNameAndColumnName, storeDateTimeAsTicks);
         }
 
         public Database Database { get; private set; }

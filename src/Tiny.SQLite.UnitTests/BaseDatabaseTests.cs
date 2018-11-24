@@ -21,7 +21,12 @@ namespace TinySQLite.Net.UnitTests
         {
             if (string.IsNullOrEmpty(_pathOfDb))
             {
-                _pathOfDb = Path.Combine(Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), $"{TestContext.TestName}.db"));
+                var directoryPath = Path.Combine(Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "Tiny.Sqlite"));
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                _pathOfDb = Path.Combine(directoryPath, $"{TestContext.TestName}.db");
             }
 
             if (File.Exists(_pathOfDb))
@@ -33,13 +38,13 @@ namespace TinySQLite.Net.UnitTests
         [TestCleanup]
         public void TestCleanup()
         {
-            if (string.IsNullOrEmpty(_pathOfDb))
-            {
-                if (File.Exists(_pathOfDb))
-                {
-                    File.Delete(_pathOfDb);
-                }
-            }
+            ////if (string.IsNullOrEmpty(_pathOfDb))
+            ////{
+            ////    if (File.Exists(_pathOfDb))
+            ////    {
+            ////        File.Delete(_pathOfDb);
+            ////    }
+            ////}
         }
     }
 }
