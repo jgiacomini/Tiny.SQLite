@@ -1,15 +1,27 @@
 ﻿using System;
+using System.Linq;
+
 namespace Tiny.SQLite
 {
     internal class TableMapping
     {
-        internal TableMapping()
+        internal TableMapping(
+            string tableName,
+            Type mappedType,
+            TableColumn[] columns,
+            TableIndex[] indexes)
         {
+            TableName = tableName;
+            MappedType = mappedType;
+            Columns = columns;
+            Indexes = indexes;
+            HasAutoIncrement = Columns.Any(c => c.IsAutoIncrement);
         }
 
-        public string TableName { get; internal set; }
-        public Type MappedType { get; internal set; }
-        public TableColumn[] Columns { get; internal set; }
-        public TableIndex[] Indexes { get; internal set; }
+        public string TableName { get; }
+        public Type MappedType { get; }
+        public TableColumn[] Columns { get; }
+        public TableIndex[] Indexes { get; }
+        public bool HasAutoIncrement { get; }
     }
 }

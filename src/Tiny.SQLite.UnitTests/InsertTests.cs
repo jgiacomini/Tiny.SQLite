@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tiny.SQLite.Attributes;
 
 namespace Tiny.SQLite.UnitTests
@@ -26,7 +25,10 @@ namespace Tiny.SQLite.UnitTests
                 var table = dbContext.Table<InsertTable>();
                 await table.CreateAsync();
 
-                await table.InsertAsync(new InsertTable() { Name = "TOTO", Date = DateTime.Now });
+                var toInsert = new InsertTable() { Name = "ITEM", Date = DateTime.Now };
+                await table.InsertAsync(toInsert);
+
+                Assert.IsTrue(toInsert.Id == 1);
 
                 var count = await table.CountAsync();
                 Assert.IsTrue(count == 1);
@@ -41,19 +43,24 @@ namespace Tiny.SQLite.UnitTests
                 var table = dbContext.Table<InsertTable>();
                 await table.CreateAsync();
 
-                var toInsert = new List<InsertTable>()
+                var toInsert = new List<InsertTable>();
+
+                var date = DateTime.Now;
+                for (int i = 0; i < 10; i++)
                 {
-                    new InsertTable() { Name = "VAL1", Date = DateTime.Now },
-                    new InsertTable() { Name = "VAL2", Date = DateTime.Now },
-                    new InsertTable() { Name = "VAL3", Date = DateTime.Now },
-                    new InsertTable() { Name = "VAL4", Date = DateTime.Now },
-                    new InsertTable() { Name = "VAL5", Date = DateTime.Now }
-                };
+                    toInsert.Add(new InsertTable() { Name = $"VAL{i}", Date = date.AddMinutes(i) });
+                }
 
                 await table.InsertAsync(toInsert);
 
                 var count = await table.CountAsync();
-                Assert.IsTrue(count == 5);
+                Assert.IsTrue(count == toInsert.Count);
+
+                for (int i = 0; i < toInsert.Count; i++)
+                {
+                    Assert.IsTrue(toInsert[i].Id == i + 1);
+                    Assert.IsTrue(toInsert[i].Date == date.AddMinutes(i));
+                }
             }
         }
     }

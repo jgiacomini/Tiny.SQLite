@@ -29,6 +29,11 @@ namespace Tiny.SQLite
             }
         }
 
+        public SqliteTransaction GetTransaction()
+        {
+            return _connection.BeginTransaction();
+        }
+
         public async Task OpenConnectionAsync(CancellationToken cancellationToken)
         {
             if (_connection.State == ConnectionState.Closed)
@@ -37,7 +42,7 @@ namespace Tiny.SQLite
             }
         }
 
-        public async Task<int> ExecuteNonQueryAsync(string sql, IEnumerable<SqliteParameter> parameters,  CancellationToken cancellationToken)
+        public async Task<int> ExecuteNonQueryAsync(string sql, IEnumerable<SqliteParameter> parameters, SqliteTransaction transaction,  CancellationToken cancellationToken)
         {
             using (var monitor = new QueryMonitor(sql, _internalLogger))
             {
@@ -49,6 +54,8 @@ namespace Tiny.SQLite
                 {
                     command.Parameters.AddRange(parameters);
                 }
+
+                command.Transaction = transaction;
 
                 try
                 {
@@ -67,7 +74,6 @@ namespace Tiny.SQLite
             {
                 await OpenConnectionAsync(cancellationToken);
                 var command = _connection.CreateCommand();
-
                 command.CommandText = sql;
                 return await command.ExecuteScalarAsync(cancellationToken);
             }

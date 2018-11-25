@@ -20,6 +20,7 @@ namespace Tiny.SQLite
             _queriesManager = queriesManager;
         }
 
+        #region Create
         public Task CreateAsync(CancellationToken cancellationToken = default)
         {
             var queryBuilder = new StringBuilder($"CREATE TABLE IF NOT EXISTS {_mapping.TableName.EscapeTableName()}(\n");
@@ -88,18 +89,91 @@ namespace Tiny.SQLite
                 }
             }
 
-            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), null, cancellationToken);
+            return _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), null, null, cancellationToken);
+        }
+        #endregion
+
+        #region Insert
+        public async Task<int> InsertAsync(T item, CancellationToken cancellationToken = default)
+        {
+            var result = await InternalInsertAsync(item, null, cancellationToken);
+
+            var autoIncrementProperty = _mapping.Columns.Where(s => s.IsAutoIncrement).FirstOrDefault();
+
+            if (autoIncrementProperty != null)
+            {
+                autoIncrementProperty.PropertyInfo.SetValue(item, ConvertToDesiredType(result.Identity, autoIncrementProperty.PropertyInfo.PropertyType));
+            }
+
+            return result.RowAffected;
         }
 
-        public Task<int> InsertAsync(T item, CancellationToken cancellationToken = default)
+        private object ConvertToDesiredType(long identity, Type propertyType)
         {
-            return InsertAsync(new[] { item }, cancellationToken);
+            if (propertyType == typeof(int))
+            {
+                return Convert.ToInt32(identity);
+            }
+
+            if (propertyType == typeof(short))
+            {
+                return Convert.ToInt16(identity);
+            }
+
+            if (propertyType == typeof(uint))
+            {
+                return Convert.ToUInt32(identity);
+            }
+
+            if (propertyType == typeof(ushort))
+            {
+                return Convert.ToUInt16(identity);
+            }
+
+            return identity;
         }
 
         public async Task<int> InsertAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
         {
-            var queryBuilder = new StringBuilder($"INSERT INTO {_mapping.TableName.EscapeTableName()} (");
+            var results = new List<InsertResult>();
+            var transaction = _queriesManager.GetTransaction();
+            try
+            {
+                foreach (var item in items)
+                {
+                    results.Add(await InternalInsertAsync(item, transaction, cancellationToken));
+                }
 
+                transaction.Commit();
+
+                if (_mapping.HasAutoIncrement)
+                {
+                    var autoIncrementProperty = _mapping.Columns.Where(s => s.IsAutoIncrement).FirstOrDefault();
+                    for (int i = 0; i < results.Count; i++)
+                    {
+                        var item = items.ElementAt(i);
+                        var result = results[i];
+                        autoIncrementProperty.PropertyInfo.SetValue(item, ConvertToDesiredType(result.Identity, autoIncrementProperty.PropertyInfo.PropertyType));
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+
+            if (results.Any())
+            {
+                return results.Sum(v => v.RowAffected);
+            }
+
+            return 0;
+        }
+
+        private async Task<InsertResult> InternalInsertAsync(T item, SqliteTransaction transaction, CancellationToken cancellationToken = default)
+        {
+            var queryBuilder = new StringBuilder($"INSERT INTO {_mapping.TableName.EscapeTableName()} (");
             var columnsFiltred = _mapping.Columns.Where(c => !c.IsAutoIncrement);
             var lastColumn = columnsFiltred.Last();
             foreach (var column in columnsFiltred)
@@ -116,53 +190,63 @@ namespace Tiny.SQLite
                 }
             }
 
-            queryBuilder.Append(" VALUES ");
+            queryBuilder.Append(" VALUES (");
 
             var parameters = new List<SqliteParameter>();
-            var count = items.Count();
-            for (int indexItem = 0; indexItem < count; indexItem++)
+
+            for (int i = 0; i < columnsFiltred.Count(); i++)
             {
-                var item = items.ElementAt(indexItem);
+                var column = columnsFiltred.ElementAt(i);
+                var value = column.PropertyInfo.GetValue(item);
+                var paramName = $"@param_{i}";
 
-                queryBuilder.Append("(");
-                for (int i = 0; i < columnsFiltred.Count(); i++)
+                var parameter = new SqliteParameter(paramName, value);
+
+                // TODO  explicit more types
+                if (column.PropertyInfo.DeclaringType == typeof(byte[]))
                 {
-                    var column = columnsFiltred.ElementAt(i);
-                    var value = column.PropertyInfo.GetValue(item);
-                    var paramName = $"@param{indexItem}_{i}";
-
-                    var parameter = new SqliteParameter(paramName, value);
-
-                    if (column.PropertyInfo.DeclaringType == typeof(byte[]))
-                    {
-                        parameter.DbType = System.Data.DbType.Binary;
-                    }
-
-                    parameters.Add(parameter);
-                    queryBuilder.Append(paramName);
-
-                    if (column == lastColumn)
-                    {
-                        queryBuilder.Append(") ");
-                    }
-                    else
-                    {
-                        queryBuilder.Append(", ");
-                    }
+                    parameter.DbType = System.Data.DbType.Binary;
                 }
 
-                if (indexItem < count - 1)
+                parameters.Add(parameter);
+                queryBuilder.Append(paramName);
+
+                if (column == lastColumn)
+                {
+                    queryBuilder.Append(") ");
+                }
+                else
                 {
                     queryBuilder.Append(", ");
                 }
-
-                queryBuilder.AppendLine();
             }
 
             queryBuilder.Append(";");
 
-            return await _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), parameters, cancellationToken);
+            var nbRowAffected = await _queriesManager.ExecuteNonQueryAsync(queryBuilder.ToString(), parameters, transaction, cancellationToken);
+
+            long id = 0;
+
+            if (_mapping.HasAutoIncrement)
+            {
+                id = (long)await _queriesManager.ExecuteScalarAsync("SELECT last_insert_rowid()", cancellationToken);
+            }
+
+            return new InsertResult(nbRowAffected, id);
         }
+
+        internal class InsertResult
+        {
+            public InsertResult(int rowAffected, long identity)
+            {
+                RowAffected = rowAffected;
+                Identity = identity;
+            }
+
+            public int RowAffected { get; }
+            public long Identity { get; }
+        }
+        #endregion
 
         private string GetCollate(Collate collate)
         {
@@ -179,23 +263,29 @@ namespace Tiny.SQLite
             }
         }
 
+        #region Exists
         public async Task<bool> ExistsAsync(CancellationToken cancellationToken = default)
         {
             var result = await _queriesManager.ExecuteScalarAsync($"SELECT Count(name) FROM sqlite_master WHERE type = 'table' AND name = '{_mapping.TableName}'", cancellationToken);
             return Convert.ToBoolean(result);
         }
+        #endregion
 
+        #region Drop
         public Task DropAsync(CancellationToken cancellationToken = default)
         {
             var query = $"DROP TABLE IF EXISTS {_mapping.TableName.EscapeTableName()};";
-            return _queriesManager.ExecuteNonQueryAsync(query, null, cancellationToken);
+            return _queriesManager.ExecuteNonQueryAsync(query, null, null, cancellationToken);
         }
+        #endregion
 
+        #region Count
         public async Task<long> CountAsync(CancellationToken cancellationToken = default)
         {
             var query = $"SELECT COUNT(*) FROM {_mapping.TableName.EscapeTableName()};";
 
             return (long)await _queriesManager.ExecuteScalarAsync(query, cancellationToken);
         }
+        #endregion
     }
 }

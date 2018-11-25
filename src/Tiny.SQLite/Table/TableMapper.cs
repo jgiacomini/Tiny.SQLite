@@ -28,16 +28,12 @@ namespace Tiny.SQLite
 
         public TableMapping Map(Type type)
         {
-            TableMapping mapping = new TableMapping
-            {
-                MappedType = type,
-                TableName = GetTableName(type)
-            };
-            mapping.MappedType = type;
             var columnsDictionaries = GetColums(type);
-            mapping.Columns = columnsDictionaries.Select(a => a.Key).ToArray();
-            mapping.Indexes = GetTableIndexes(columnsDictionaries);
 
+            var columns = columnsDictionaries.Select(a => a.Key).ToArray();
+            var indexes = GetTableIndexes(columnsDictionaries);
+
+            var mapping = new TableMapping(GetTableName(type), type, columns, indexes);
             if (mapping.Columns.Count(c => c.IsAutoIncrement) > 1)
             {
                 throw new TableHaveMoreThanOneAutoIncrementedColumnException(mapping.TableName);

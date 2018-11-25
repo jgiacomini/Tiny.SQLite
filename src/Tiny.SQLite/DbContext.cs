@@ -95,7 +95,7 @@ namespace Tiny.SQLite
 
         public Task<int> ExecuteNonQueryAsync(string sql, CancellationToken cancellationToken)
         {
-            return _queriesManager.ExecuteNonQueryAsync(sql, null, cancellationToken);
+            return _queriesManager.ExecuteNonQueryAsync(sql, null, null, cancellationToken);
         }
 
         #region IDisposable Support
