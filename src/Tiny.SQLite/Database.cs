@@ -115,7 +115,7 @@ namespace Tiny.SQLite
         /// Get the amout of time a table is locked before to throw SQLITE_BUSY exception
         /// </summary>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        /// <returns></returns>
+        /// <returns>return a task</returns>
         public async Task SetBusyTimeoutAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
         {
             await _queriesManager.ExecuteScalarAsync($"PRAGMA busy_timeout = {timeSpan.TotalMilliseconds};", cancellationToken);
